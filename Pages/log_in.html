@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cosmic Cache YIC - Sign Up</title>
+    <title>Cosmic Cache YIC - Login</title>
     <link rel="stylesheet" href="../Assets/CSS/style.css">
 </head>
 <body>
@@ -21,15 +21,10 @@
 
         <section class="form-section">
             <div class="form-card">
-                <h2 class="form-title">Sign Up</h2>
+                <h2 class="form-title">Log In</h2>
                 
-                <form id="signup-form">
+                <form id="login-form">
                     
-                    <div class="input-group">
-                        <label for="name">Name :</label>
-                        <input type="text" id="name" placeholder="Enter your name">
-                    </div>
-
                     <div class="input-group">
                         <label for="email">Email :</label>
                         <input type="text" id="email" placeholder="Enter your email">
@@ -37,19 +32,19 @@
 
                     <div class="input-group">
                         <label for="password">Password :</label>
-                        <input type="password" id="password" placeholder="Create password">
+                        <input type="password" id="password" placeholder="Enter password">
                     </div>
 
-                    <div class="input-group">
-                        <label for="confirm-password">Confirm Password :</label>
-                        <input type="password" id="confirm-password" placeholder="Confirm password">
-                    </div>
+                    <p id="error-message" class="error-text hidden"></p>
 
-                    <p id="signup-error" class="error-text hidden"></p>
-
-                    <button type="submit" class="card-btn form-btn">Sign Up</button>
+                    <button type="submit" class="card-btn form-btn">Login</button>
                 </form>
+                <br>
 
+                <div class="signup-prompt">
+                    <p>Don't have an account yet?</p>
+                    <a href="sign_up.html" class="dashed-link">sign up</a>
+                </div>
             </div>
         </section>
 
