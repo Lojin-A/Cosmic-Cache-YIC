@@ -1,0 +1,292 @@
+/* ==================================================
+   1. GLOBAL SETTINGS (Font and Reset)
+================================================== */
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'VT323', monospace;
+}
+
+/* ==================================================
+   2. BACKGROUND & CENTERING
+================================================== */
+body {
+    /* Puts a 60% black shadow directly over the image to make text readable */
+    background-image: 
+        linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+        url('../Media/background.jpeg'); 
+    
+    background-size: cover;
+    background-position: center;
+    background-color: #2b2e5a; /* Fallback color if image is missing */
+    
+    /* Flexbox is used here to perfectly center the main window on the screen */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* ==================================================
+   3. THE MAIN OS WINDOW CONTAINER
+================================================== */
+.os-window {
+    background-color: #e6ebf5; 
+    border: 4px solid #4b527e;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 850px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2); /* Soft shadow behind the window */
+    overflow: hidden; /* Keeps the topbar from spilling out of the rounded corners */
+}
+
+/* ==================================================
+   4. TOP NAVIGATION BAR
+================================================== */
+.window-topbar {
+    background-color: #92aae3;
+    border-bottom: 4px solid #4b527e;
+    padding: 12px 20px;
+    
+    /* Pushes the title to the far left, and the buttons to the far right */
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+}
+
+.window-title {
+    color: #fcf4dd;
+    font-size: 24px;
+    font-weight: bold;
+    text-shadow: 2px 2px 0px #4b527e; /* 3D text effect */
+}
+
+.top-nav {
+    display: flex;
+    gap: 10px; /* Spaces the buttons apart */
+}
+
+/* The small pill-shaped buttons at the top */
+.nav-pill {
+    background-color: #fcf4dd;
+    color: #31365a;
+    text-decoration: none;
+    padding: 5px 15px;
+    border: 2px solid #4b527e;
+    border-radius: 20px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.nav-pill:hover { transform: scale(1.05);background-color: #fce86c; } /* Small zoom effect on hover */
+.logout-pill { background-color: #f9ceb5; } /* Peach color for logout */
+.logout-pill:hover { transform: scale(1.05);background-color: #ecae88; }
+
+.title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Adds a nice little space between the sparkle and the words */
+}
+
+/* Fixes the tiny mobile issue by using pixels! */
+.title-icon {
+    height: 40px; /* You can make this number bigger or smaller to fit perfectly */
+    width: auto;
+    image-rendering: pixelated; /* Keeps your custom pixel art looking sharp! */
+}
+/* This makes the link invisible and adds a hover effect! */
+.title-link {
+    text-decoration: none; /* Removes the default blue link underline */
+    cursor: pointer; /* Makes the mouse turn into a pointing hand */
+    transition: transform 0.1s;
+}
+
+/* Optional: Adds a tiny, satisfying bounce when they hover over the title! */
+.title-link:hover {
+    transform: scale(1.02); 
+}
+
+/* ==================================================
+   5. WELCOME TEXT AREA
+================================================== */
+.welcome-section {
+    text-align: center;
+    padding: 30px 20px 10px;
+}
+
+.greeting {
+    font-size: 45px;
+    color: #31365a;
+    font-style: italic;
+}
+
+.sub-greeting {
+    color: #4b527e;
+    font-size: 22px;
+}
+
+/* ==================================================
+   6. THE MAIN ACTION CARDS
+================================================== */
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px 30px 40px;
+}
+
+.action-card {
+    background-color: #8c9acb; 
+    border: 4px solid #4b527e;
+    border-radius: 8px;
+    padding: 25px 20px;
+    width: 48%; /* Each card takes up almost half the width */
+    
+    /* Aligns everything inside the card vertically */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* The dashed box that holds the images */
+.image-area {
+    width: 100%;
+    height: 140px; 
+    background-color: rgba(255, 255, 255, 0.5); 
+    border: 3px dashed #4b527e;
+    border-radius: 4px;
+    
+    /* Centers the image inside the dashed box */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.card-desc {
+    color: #31365a;
+    font-size: 20px;
+    margin-bottom: 25px;
+}
+
+/* The bottom buttons inside the cards */
+.card-btn {
+    background-color: #fcf4dd;
+    color: #31365a;
+    text-decoration: none;
+    border: 3px solid #4b527e;
+    padding: 10px 20px;
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 4px;
+    width: 100%; 
+    transition: all 0.1s; /* Makes the hover effect smooth */
+}
+
+.card-btn:hover  {
+    background-color: #fce86c; 
+    transform: translateY(-2px); /* Moves the button up slightly */
+    box-shadow: 0 4px 0px #4b527e; /* Creates a 3D shadow underneath */
+}
+
+/* ==================================================
+   7. WINDOW FOOTER STATUS BAR
+================================================== */
+.window-footer {
+    background-color: #b0c4eb;
+    border-top: 4px solid #4b527e;
+    padding: 8px 15px;
+    color: #2b2e5a;
+    font-size: 18px;
+    text-align: center;
+}
+
+/* ==================================================
+   8. MOBILE RESPONSIVENESS (Phones)
+================================================== */
+@media (max-width: 768px) {
+    /* Stacks the two action cards */
+    .card-container {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .action-card {
+        width: 100%;
+        max-width: 400px;
+    }
+
+    /* --- THE NEW MOBILE FIX FOR THE TOP BAR --- */
+    .window-topbar {
+        flex-direction: column; /* Puts the title on top of the buttons */
+        gap: 15px;
+    }
+
+    .top-nav {
+        flex-direction: column; /* Stacks the buttons on top of each other */
+        width: 100%; /* Makes sure the button container takes up the whole width */
+    }
+
+    .nav-pill {
+        width: 100%; /* Forces every button to be the exact same size */
+        text-align: center; /* Keeps the text neatly centered inside */
+    }
+}
+
+/* ==================================================
+   9. POPUPS (Hidden by default)
+================================================== */
+/* The dark transparent background behind the popup */
+.popup-overlay {
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Makes sure it floats on top of EVERYTHING else */
+}
+
+/* This is the class the JavaScript adds and removes! */
+.popup-overlay.hidden {
+    display: none;
+}
+
+/* The actual popup window */
+.popup-box {
+    background-color: #e6ebf5;
+    border: 4px solid #4b527e;
+    border-radius: 8px;
+    padding: 30px;
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+}
+
+.popup-box h3 {
+    color: #2b2e5a;
+    font-size: 32px;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 0px #b0c4eb;
+}
+
+.popup-box p {
+    color: #4b527e;
+    font-size: 24px;
+    margin-bottom: 25px;
+}
+
+/* Makes the close button fit nicely */
+.popup-box .card-btn {
+    cursor: pointer;
+    display: inline-block;
+    width: auto;
+}
