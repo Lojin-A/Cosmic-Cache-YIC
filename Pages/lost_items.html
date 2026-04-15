@@ -3,17 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lost Items</title>
+<title>Lost Items - Cosmic Cache</title>
 <link rel="stylesheet" href="../Assets/CSS/style.css">
-
-<style>
-img { width: 100%; height: 100%; }
-</style>
-
 </head>
 
 <body>
-
 <main class="os-window">
 
 <header class="window-topbar">
@@ -25,31 +19,47 @@ img { width: 100%; height: 100%; }
 </a>
 
 <nav class="top-nav">
-<a href="post_lost.html" class="nav-pill">Post Lost</a>
-<a href="found_items.html" class="nav-pill">Found</a>
+<a href="#" id="btn-account" class="nav-pill">My Account</a>
+<a href="#" id="btn-notifications" class="nav-pill">Notifications</a>
+<a href="login.html" class="nav-pill logout-pill">Log out</a>
 </nav>
 </header>
 
 <section class="welcome-section">
-<h2 class="greeting">Lost Items</h2>
+<a href="post_lost.html" class="nav-pill" style="display: inline-block; padding: 12px 50px; margin-bottom: 15px; font-size: 24px;">Report a Lost Item</a>
+<h2 class="sub-greeting">Browse Lost Items</h2>
 </section>
 
 <section class="card-container">
 
 <div class="action-card">
 <div class="image-area">
-<img src="../Assets/Media/lost.jpeg">
+<span style="font-size: 80px; color: #4b527e; opacity: 0.2;">X</span>
 </div>
-<p>Item: Blue Bottle</p>
-<p>Location: Library</p>
-<button class="card-btn">Claim</button>
+<div class="card-desc">
+<div style="width: 80%; height: 4px; background: #4b527e; margin: 10px auto;"></div>
+<div style="width: 60%; height: 4px; background: #4b527e; margin: 10px auto;"></div>
+</div>
 </div>
 
 <div class="action-card">
-<div class="image-area"></div>
-<p>Item: Wallet</p>
-<p>Location: Cafeteria</p>
-<button class="card-btn">Claim</button>
+<div class="image-area">
+<span style="font-size: 80px; color: #4b527e; opacity: 0.2;">X</span>
+</div>
+<div class="card-desc">
+<div style="width: 80%; height: 4px; background: #4b527e; margin: 10px auto;"></div>
+<div style="width: 60%; height: 4px; background: #4b527e; margin: 10px auto;"></div>
+</div>
+</div>
+
+<div class="action-card">
+<div class="image-area">
+<span style="font-size: 80px; color: #4b527e; opacity: 0.2;">X</span>
+</div>
+<div class="card-desc">
+<div style="width: 80%; height: 4px; background: #4b527e; margin: 10px auto;"></div>
+<div style="width: 60%; height: 4px; background: #4b527e; margin: 10px auto;"></div>
+</div>
 </div>
 
 </section>
@@ -59,5 +69,7 @@ Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
 </footer>
 
 </main>
+
+<script src="../Assets/JS/script.js"></script>
 </body>
 </html>
