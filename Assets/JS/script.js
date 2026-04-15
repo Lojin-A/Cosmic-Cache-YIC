@@ -1,4 +1,3 @@
-// Wait for the HTML to fully load before running the script
 document.addEventListener("DOMContentLoaded", () => {
     
     // =========================================================
@@ -11,12 +10,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnNotifications && btnAccount) {
         btnNotifications.addEventListener("click", (event) => {
-            event.preventDefault(); // Stops the page from jumping to top
+            event.preventDefault(); 
             popupNotifications.classList.remove("hidden");
         });
 
         btnAccount.addEventListener("click", (event) => {
-            event.preventDefault(); // Stops the page from jumping to top
+            event.preventDefault(); 
             popupAccount.classList.remove("hidden");
         });
     }
@@ -32,11 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
             // Stop the form from refreshing the page immediately
             event.preventDefault(); 
 
-            // Get what the user typed
             const emailValue = document.getElementById("email").value;
             const passwordValue = document.getElementById("password").value;
 
-            // Phase 2 Validation Checks
             if (emailValue === "" || passwordValue === "") {
                 errorMessage.textContent = "Error: Please fill in both fields!";
                 errorMessage.classList.remove("hidden");
@@ -64,14 +61,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (signupForm) {
         signupForm.addEventListener("submit", (event) => {
-            event.preventDefault(); // Stop page refresh
+            event.preventDefault(); 
 
             const nameValue = document.getElementById("name").value;
             const emailValue = document.getElementById("email").value;
             const passwordValue = document.getElementById("password").value;
             const confirmValue = document.getElementById("confirm-password").value;
 
-            // Phase 2 Validation Checks for Sign Up
             if (nameValue === "" || emailValue === "" || passwordValue === "" || confirmValue === "") {
                 signupError.textContent = "Error: Please fill in all fields!";
                 signupError.classList.remove("hidden");
@@ -90,8 +86,8 @@ document.addEventListener("DOMContentLoaded", () => {
             } 
             else {
                 signupError.classList.add("hidden");
-                alert("Account Created Successfully! Welcome Lojin."); // Or whatever name they typed!
-                window.location.href = "index.html"; 
+                alert("Account Created Successfully! Welcome Lojin."); 
+                window.location.href = "../index.html"; 
             }
         });
     }

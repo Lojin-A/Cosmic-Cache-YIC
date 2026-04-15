@@ -297,10 +297,10 @@ body {
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 15px;
-    text-align: left; /* Aligns the text exactly like your sketch */
+    text-align: left; 
 }
 
-/* Puts the Accept/Deny buttons perfectly side-by-side */
+
 .btn-group {
     display: flex;
     gap: 10px;
