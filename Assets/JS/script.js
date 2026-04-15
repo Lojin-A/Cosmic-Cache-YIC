@@ -91,6 +91,84 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    // =========================================================
+    // 5. REPORT LOST ITEM VALIDATION (With Pro Checks!)
+    // =========================================================
+    const reportLostForm = document.getElementById("report-lost-form");
+    const reportError = document.getElementById("report-error");
+
+    if (reportLostForm) {
+        reportLostForm.addEventListener("submit", (event) => {
+            event.preventDefault(); 
+
+            const itemName = document.getElementById("item-name").value.trim();
+            const itemLocation = document.getElementById("item-location").value.trim();
+            const itemDate = document.getElementById("item-date").value;
+            const itemDesc = document.getElementById("item-description").value.trim();
+            const itemPhoto = document.getElementById("item-photo").value; // Gets the file name
+
+            // Get exactly today's date in YYYY-MM-DD format to compare
+            const today = new Date().toISOString().split('T')[0];
+
+            // Check 1: Are any required fields completely empty?
+            if (itemName === "" || itemLocation === "" || itemDate === "" || itemDesc === "") {
+                reportError.textContent = "Error: Please fill in all required fields!";
+                reportError.classList.remove("hidden");
+            } 
+            // Check 2: Is the date in the future?
+            else if (itemDate > today) {
+                reportError.textContent = "Error: You cannot select a date in the future!";
+                reportError.classList.remove("hidden");
+            }
+            // Check 3: If they uploaded a file, is it actually an image?
+            else if (itemPhoto !== "" && !itemPhoto.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                reportError.textContent = "Error: Please upload a valid image file (JPG, PNG, GIF).";
+                reportError.classList.remove("hidden");
+            }
+            // Success!
+            else {
+                reportError.classList.add("hidden");
+                alert("Lost item reported successfully!");
+                reportLostForm.reset(); 
+            }
+        });
+    }
+
+    // =========================================================
+    // 6. POST FOUND ITEM VALIDATION
+    // =========================================================
+    const reportFoundForm = document.getElementById("report-found-form");
+    const foundError = document.getElementById("found-error");
+
+    if (reportFoundForm) {
+        reportFoundForm.addEventListener("submit", (event) => {
+            event.preventDefault(); 
+
+            // Grab the text the user typed
+            const itemName = document.getElementById("found-item-name").value.trim();
+            const itemLocation = document.getElementById("found-item-location").value.trim();
+            const itemDesc = document.getElementById("found-item-description").value.trim();
+            const itemPhoto = document.getElementById("found-item-photo").value; 
+
+            // Check 1: Are any required fields completely empty?
+            if (itemName === "" || itemLocation === "" || itemDesc === "") {
+                foundError.textContent = "Error: Please fill in all required fields!";
+                foundError.classList.remove("hidden");
+            } 
+            // Check 2: If they uploaded a file, is it actually an image?
+            else if (itemPhoto !== "" && !itemPhoto.match(/\.(jpg|jpeg|png|gif)$/i)) {
+                foundError.textContent = "Error: Please upload a valid image file (JPG, PNG, GIF).";
+                foundError.classList.remove("hidden");
+            }
+            // Success!
+            else {
+                foundError.classList.add("hidden");
+                alert("Found item posted successfully! Thank you for helping.");
+                reportFoundForm.reset(); 
+            }
+        });
+    }
 });
 
 // =========================================================
@@ -102,4 +180,7 @@ function closePopups() {
     popups.forEach(popup => {
         popup.classList.add("hidden");
     });
+    
+    
 }
+
