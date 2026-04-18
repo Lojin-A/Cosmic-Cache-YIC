@@ -24,35 +24,58 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. LOGIN VALIDATION LOGIC (Runs only on the Login page)
     // =========================================================
     const loginForm = document.getElementById("login-form");
-    const errorMessage = document.getElementById("error-message");
+const errorMessage = document.getElementById("error-message"); // The JS Error
+const phpError = document.getElementById("php-error");         // The PHP Error
+const emailBox = document.getElementById("email");
+const passwordBox = document.getElementById("password");
 
-    if (loginForm) {
-        loginForm.addEventListener("submit", (event) => {
-            // Stop the form from refreshing the page immediately
+// =========================================================
+// HIDE ALL ERRORS WHEN TYPING (Your input event idea!)
+// =========================================================
+if (emailBox && passwordBox) {
+    
+    // Listen for typing in the email box
+    emailBox.addEventListener("input", () => {
+        if (errorMessage) errorMessage.classList.add("hidden"); // Hide JS error
+        if (phpError) phpError.style.display = "none";          // Hide PHP error
+    });
+
+    // Listen for typing in the password box
+    passwordBox.addEventListener("input", () => {
+        if (errorMessage) errorMessage.classList.add("hidden"); // Hide JS error
+        if (phpError) phpError.style.display = "none";          // Hide PHP error
+    });
+}
+
+// =========================================================
+// YOUR ORIGINAL SUBMIT LOGIC
+// =========================================================
+if (loginForm) {
+    loginForm.addEventListener("submit", (event) => {
+        const emailValue = emailBox.value;
+        const passwordValue = passwordBox.value;
+
+        if (emailValue === "" || passwordValue === "") {
             event.preventDefault(); 
+            errorMessage.textContent = "Error: Please fill in both fields!";
+            errorMessage.classList.remove("hidden");
+        } 
+        else if (!emailValue.includes("@")) {
+            event.preventDefault(); 
+            errorMessage.textContent = "Error: Please enter a valid email address!";
+            errorMessage.classList.remove("hidden");
+        } 
+        else if (passwordValue.length < 6) {
+            event.preventDefault(); 
+            errorMessage.textContent = "Error: Password must be at least 6 characters!";
+            errorMessage.classList.remove("hidden");
+        } 
+        else {
+            errorMessage.classList.add("hidden");
+        }
+    });
+}
 
-            const emailValue = document.getElementById("email").value;
-            const passwordValue = document.getElementById("password").value;
-
-            if (emailValue === "" || passwordValue === "") {
-                errorMessage.textContent = "Error: Please fill in both fields!";
-                errorMessage.classList.remove("hidden");
-            } 
-            else if (!emailValue.includes("@")) {
-                errorMessage.textContent = "Error: Please enter a valid email address!";
-                errorMessage.classList.remove("hidden");
-            } 
-            else if (passwordValue.length < 6) {
-                errorMessage.textContent = "Error: Password must be at least 6 characters!";
-                errorMessage.classList.remove("hidden");
-            } 
-            else {
-                errorMessage.classList.add("hidden");
-                alert("Login Successful! Welcome to Cosmic Cache.");
-                window.location.href = "../index.html"; 
-            }
-        })
-    }
     // =========================================================
     // 3. SIGN UP VALIDATION LOGIC (Runs only on Sign Up page)
     // =========================================================
