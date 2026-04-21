@@ -23,7 +23,7 @@ exit();
     <main class="os-window">
         
         <header class="window-topbar">
-            <a href="../index.html" class="title-link">
+            <a href="../index.php" class="title-link">
                 <div class="title-group">
                     <img src="../Assets/Media/pixel_sparkle.png" alt="icon" class="title-icon">
                     <div class="window-title">Cosmic Cache YIC</div>
@@ -32,7 +32,7 @@ exit();
             <nav class="top-nav">
                 <a href="#" class="nav-pill" id="btn-account">My Account</a>
                 <a href="#" class="nav-pill" id="btn-notifications">Notifications</a>
-                <a href="../index.html" class="nav-pill logout-pill">Log out</a>
+                <a href="logout.php" class="nav-pill logout-pill">Log out</a>
             </nav>
         </header>
 

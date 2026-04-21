@@ -26,9 +26,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         // check role for routing
         if ($_SESSION['role'] === 'admin') {
-            header("Location: admin.html"); 
+            header("Location: admin.php"); 
         } else {
-            header("Location: ../index.html"); 
+            header("Location: ../index.php"); 
         }
         exit();
     } else {
@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <main class="os-window">
         
         <header class="window-topbar">
-            <a href="../index.html" class="title-link">
+            <a href="../index.php" class="title-link">
                 <div class="title-group">
                     <img src="../Assets/Media/pixel_sparkle.png" alt="icon" class="title-icon">
                     <div class="window-title">Cosmic Cache YIC</div>
@@ -87,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="signup-prompt">
                     <p>Don't have an account yet?</p>
-                    <a href="sign_up.html" class="dashed-link">sign up</a>
+                    <a href="sign_up.php" class="dashed-link">sign up</a>
                 </div>
             </div>
         </section>

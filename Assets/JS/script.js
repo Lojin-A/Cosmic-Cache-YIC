@@ -81,36 +81,56 @@ if (loginForm) {
     // =========================================================
     const signupForm = document.getElementById("signup-form");
     const signupError = document.getElementById("signup-error");
+    const phpSignupError = document.getElementById("php-signup-error");
+    
+    const nameBox = document.getElementById("name");
+    const emailSignupBox = document.getElementById("email");
+    const passwordSignupBox = document.getElementById("password");
+    const confirmBox = document.getElementById("confirm-password");
+
+    // Hide errors when typing
+    if (nameBox && emailSignupBox && passwordSignupBox && confirmBox) {
+        const hideSignupErrors = () => {
+            if (signupError) signupError.classList.add("hidden");
+            if (phpSignupError) phpSignupError.style.display = "none";
+        };
+
+        nameBox.addEventListener("input", hideSignupErrors);
+        emailSignupBox.addEventListener("input", hideSignupErrors);
+        passwordSignupBox.addEventListener("input", hideSignupErrors);
+        confirmBox.addEventListener("input", hideSignupErrors);
+    }
 
     if (signupForm) {
         signupForm.addEventListener("submit", (event) => {
-            event.preventDefault(); 
-
-            const nameValue = document.getElementById("name").value;
-            const emailValue = document.getElementById("email").value;
-            const passwordValue = document.getElementById("password").value;
-            const confirmValue = document.getElementById("confirm-password").value;
+            const nameValue = nameBox.value;
+            const emailValue = emailSignupBox.value;
+            const passwordValue = passwordSignupBox.value;
+            const confirmValue = confirmBox.value;
 
             if (nameValue === "" || emailValue === "" || passwordValue === "" || confirmValue === "") {
+                event.preventDefault(); 
                 signupError.textContent = "Error: Please fill in all fields!";
                 signupError.classList.remove("hidden");
             } 
             else if (!emailValue.includes("@")) {
+                event.preventDefault(); 
                 signupError.textContent = "Error: Please enter a valid email address!";
                 signupError.classList.remove("hidden");
             } 
             else if (passwordValue.length < 6) {
+                event.preventDefault(); 
                 signupError.textContent = "Error: Password must be at least 6 characters!";
                 signupError.classList.remove("hidden");
             } 
             else if (passwordValue !== confirmValue) {
+                event.preventDefault(); 
                 signupError.textContent = "Error: Passwords do not match!";
                 signupError.classList.remove("hidden");
             } 
             else {
+                // Let the form submit to PHP!
                 signupError.classList.add("hidden");
-                alert("Account Created Successfully! Welcome Lojin."); 
-                window.location.href = "../index.html"; 
             }
         });
     }
