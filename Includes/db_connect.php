@@ -1,7 +1,7 @@
 <?php
 $host = "localhost";
 $username = "root";
-$password = "lomysql*123"; 
+$password = "Ja252267@&"; 
 $database = "cosmic_cache_db";
 
 try {

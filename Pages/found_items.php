@@ -1,3 +1,10 @@
+<?php
+session_start();
+require '../Includes/db_connect.php';
+$stmt = $conn->prepare("SELECT * FROM items WHERE Status = 'found' ORDER BY Item_id DESC");
+$stmt->execute();
+$items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +33,7 @@
 </header>
 
 <section class="welcome-section">
-<a href="post_found.html" class="nav-pill" style="display: inline-block; padding: 10px 40px; margin-bottom: 20px;">Post a New Found Item</a>
+<a href="post_found.php" class="nav-pill" style="display: inline-block; padding: 10px 40px; margin-bottom: 20px;">Post a New Found Item</a>
 <h2 class="sub-greeting">Browse Found Items</h2>
 </section>
 

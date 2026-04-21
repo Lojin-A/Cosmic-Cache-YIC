@@ -1,9 +1,20 @@
+
+<?php
+session_start();
+require '../includes/db_connect.php';
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$stmt = $conn->prepare("INSERT INTO items (item_name, location, description, status) VALUES (?, ?, ?, 'lost')");
+$stmt->execute([$_POST['item-name'], $_POST['item-location'], $_POST['item-description']]);
+header("Location: lost_items.php");
+exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Found Item - Cosmic Cache YIC</title>
+    <title>Report Lost Item - Cosmic Cache YIC</title>
     <link rel="stylesheet" href="../Assets/CSS/style.css">
 </head>
 
@@ -26,24 +37,29 @@
         </header>
 
         <section class="form-section">
-            <div class="form-card" style="max-width: 650px;">
-                <h2 class="form-title">Post A Found Item</h2>
+            <div class="form-card">
+                <h2 class="form-title">Report A Lost Item</h2>
                 
-                <form id="report-found-form">
+                <form id="report-lost-form">
                     
                     <div class="input-group">
                         <label>Item Name :</label>
-                        <input type="text" id="found-item-name" placeholder="What did you find?">
+                        <input type="text" id="item-name" placeholder="What did you lose?">
                     </div>
 
                     <div class="input-group">
-                        <label>Where was it found? :</label>
-                        <input type="text" id="found-item-location" placeholder="e.g. Near the library">
+                        <label>Last Seen At :</label>
+                        <input type="text" id="item-location" placeholder="e.g. Lab 4">
+                    </div>
+
+                    <div class="input-group">
+                        <label>Date :</label>
+                        <input type="date" id="item-date">
                     </div>
 
                     <div class="input-group">
                         <label>Description :</label>
-                        <input type="text" id="found-item-description" placeholder="Color, brand, etc...">
+                        <input type="text" id="item-description" placeholder="Color, brand, etc...">
                     </div>
 
                     <div class="input-group">
@@ -51,10 +67,10 @@
                             Upload Photo :<br>
                             <span class="sub-greeting">optional</span> 
                         </label>
-                        <input type="file" id="found-item-photo" accept="image/*">
+                        <input type="file" id="item-photo" accept="image/*">
                     </div>
 
-                    <p id="found-error" class="error-text hidden"></p>
+                    <p id="report-error" class="error-text hidden"></p>
 
                     <button type="submit" class="card-btn form-btn">Submit</button>
                 </form>
@@ -84,7 +100,6 @@
         </div>
 
     </main>
-
     <script src="../Assets/JS/script.js"></script>
 
 </body>
