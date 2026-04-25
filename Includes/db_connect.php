@@ -2,7 +2,7 @@
 $host = "localhost";
 $username = "root";
 $database = "cosmic_cache_db";
-$passwords = ["Ja252267@&", "lomysql*123"]; 
+$passwords = ["Ja252267@&"]; 
 $conn = null;
 
 foreach ($passwords as $pwd) {

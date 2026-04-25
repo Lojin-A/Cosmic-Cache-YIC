@@ -8,17 +8,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['found-item-description'];
     $user_id = $_SESSION['user_id']; 
 
-    // ملاحظة: غيرنا النوع لـ 'Found' والحالة لـ 'found' لتعمل مع صفحة العرض
-    $sql = "INSERT INTO Items (User_id, Title, Description, Type, Location, Status)
+    $sql = "INSERT INTO items (User_id, Title, Description, Type, Location, Status)
             VALUES (?, ?, ?, 'Found', ?, 'found')";
 
-    $stmt = $conn->prepare($sql);
+$stmt = $conn->prepare($sql);
     if($stmt->execute([$user_id, $title, $description, $location])) {
-        header("Location: found_items.php"); // يحولك لصفحة العرض بعد الحفظ
+        header("Location: found_items.php"); 
         exit();
     }
 }
-// بقية كود التحقق من تسجيل الدخول...
 
 // 1. Check if the user is logged in
 $is_logged_in = false;
@@ -71,7 +69,7 @@ if (isset($_SESSION['user_id'])) {
 <div class="form-card" style="max-width: 650px;">
 
 
-<form id="report-found-form" method="POST">
+<form id="report-found-form" method="POST" action="post_found.php" enctype="multipart/form-data">
 
 <div class="input-group">
 <label>Item Name :</label>
@@ -93,7 +91,7 @@ if (isset($_SESSION['user_id'])) {
 Upload Photo :<br>
 <span class="sub-greeting">optional</span>
 </label>
-<input type="file" id="found-item-photo" accept="image/*">
+<input type="file" name="found-item-photo" accept="image/*">
 </div>
 
 <p id="found-error" class="error-text hidden"></p>
@@ -129,7 +127,7 @@ Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
 
     </main>
 
-<script src="../Assets/JS/script.js"></script>
+<!--script src="../Assets/JS/script.js"></script-->
 
 </body>
 </html>

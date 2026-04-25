@@ -58,39 +58,26 @@ if (isset($_SESSION['user_id'])) {
 </section>
 
 <section class="card-container">
-
-<div class="action-card">
-<div class="image-area-img">
-<img src="../Assets/Media/found_lost1.jpg" style="width:100%; height:100%;"></div>
-<div class="card-desc">
-<p>_________</p>
-<p>_________</p>
-</div>
-<button class="card-btn">Claim</button>
-</div>
-
-<div class="action-card">
-<div class="image-area-img">
-<img src="../Assets/Media/found_lost2.jpg" style="width:100%; height:100%;">
-</div>
-<div class="card-desc">
-<p>_________</p>
-<p>_________</p>
-</div>
-<button class="card-btn">Claim</button>
-</div>
-
-<div class="action-card">
-<div class="image-area-img">
-<img src="../Assets/Media/found-lost3.jpg" style="width:100%; height:100%;">
-</div>
-<div class="card-desc">
-<p>_________</p>
-<p>_________</p>
-</div>
-<button class="card-btn">Claim</button>
-</div>
-
+    <?php if (empty($items)): ?>
+        <!-- Display this message if the database table is empty -->
+        <p style="text-align: center; color: white;">No found items in the database yet.</p>
+    <?php else: ?>
+        <!-- Loop through each row fetched from the Items table -->
+        <?php foreach ($items as $item): ?>
+            <div class="action-card">
+                <div class="image-area-img">
+                    <!-- Show item image if exists, otherwise show default placeholder -->
+                    <img src="../Assets/Media/<?php echo !empty($item['Image']) ? $item['Image'] : 'pixel_sparkle.png'; ?>" style="width:100%; height:100%;">
+                </div>
+                <div class="card-desc">
+                    <!-- Display item title and location from the database -->
+                    <p><strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
+                    <p><?php echo htmlspecialchars($item['Location']); ?></p>
+                </div>
+                <button class="card-btn">Claim</button>
+            </div>
+        <?php endforeach; ?>
+    <?php endif; ?>
 </section>
 
 <footer class="window-footer">
