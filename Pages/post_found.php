@@ -2,6 +2,24 @@
 session_start();
 require '../Includes/db_connect.php';
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $title = $_POST['found-item-name'];
+    $location = $_POST['found-item-location'];
+    $description = $_POST['found-item-description'];
+    $user_id = $_SESSION['user_id']; 
+
+    // ملاحظة: غيرنا النوع لـ 'Found' والحالة لـ 'found' لتعمل مع صفحة العرض
+    $sql = "INSERT INTO Items (User_id, Title, Description, Type, Location, Status)
+            VALUES (?, ?, ?, 'Found', ?, 'found')";
+
+    $stmt = $conn->prepare($sql);
+    if($stmt->execute([$user_id, $title, $description, $location])) {
+        header("Location: found_items.php"); // يحولك لصفحة العرض بعد الحفظ
+        exit();
+    }
+}
+// بقية كود التحقق من تسجيل الدخول...
+
 // 1. Check if the user is logged in
 $is_logged_in = false;
 $user_name = "";
@@ -48,9 +66,10 @@ if (isset($_SESSION['user_id'])) {
 </nav>
 </header>
 
-<section class="form-section">
+<section class="form-section post-page">
+    <h2 class="form-title">Post A Found Item</h2>
 <div class="form-card" style="max-width: 650px;">
-<h2 class="form-title">Post A Found Item</h2>
+
 
 <form id="report-found-form" method="POST">
 

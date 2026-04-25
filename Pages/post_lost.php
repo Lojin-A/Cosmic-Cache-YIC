@@ -66,9 +66,10 @@ if (isset($_SESSION['user_id'])) {
 </nav>
 </header>
 
-<section class="form-section">
+<section class="form-section post-page">
+    <h2 class="form-title">Report A Lost Item</h2>
 <div class="form-card">
-<h2 class="form-title">Report A Lost Item</h2>
+
 
 <form id="report-lost-form" method="POST">
 

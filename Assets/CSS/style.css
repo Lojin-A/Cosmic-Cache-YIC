@@ -202,6 +202,21 @@ body {
 
 .form-title { font-size: 35px; color: #2b2e5a; margin-bottom: 30px;}
 
+/* ==================================================
+   FORMS (post found & post lost Pages)
+================================================== */
+.form-section.post-page {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;    
+    text-align: center;
+}
+
+.form-section.post-page .form-title {
+    margin-bottom: 20px;    
+    width: 100%;          
+}
+
 .input-group {
     margin-bottom: 20px;
     display: flex;
