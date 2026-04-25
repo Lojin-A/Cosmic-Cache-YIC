@@ -1,7 +1,9 @@
 <?php
 session_start();
 require '../Includes/db_connect.php';
-$stmt = $conn->prepare("SELECT * FROM items WHERE Status = 'found' ORDER BY Item_id DESC");
+
+// Fetch Approved Found Items from the database
+$stmt = $conn->prepare("SELECT * FROM Items WHERE Type = 'Found' AND Status = 'Approved' ORDER BY Item_id DESC");
 $stmt->execute();
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -31,7 +33,7 @@ if (isset($_SESSION['user_id'])) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Found Items</title>
-<link rel="stylesheet" href="../Assets/CSS/style.css">
+<link rel="stylesheet" href="../Assets/CSS/style.css?v=5">
 </head>
 
 <body>
@@ -57,27 +59,25 @@ if (isset($_SESSION['user_id'])) {
 <h2 class="sub-greeting">Browse Found Items</h2>
 </section>
 
-<section class="card-container">
-    <?php if (empty($items)): ?>
-        <!-- Display this message if the database table is empty -->
-        <p style="text-align: center; color: white;">No found items in the database yet.</p>
-    <?php else: ?>
-        <!-- Loop through each row fetched from the Items table -->
-        <?php foreach ($items as $item): ?>
-            <div class="action-card">
-                <div class="image-area-img">
-                    <!-- Show item image if exists, otherwise show default placeholder -->
-                    <img src="../Assets/Media/<?php echo !empty($item['Image']) ? $item['Image'] : 'pixel_sparkle.png'; ?>" style="width:100%; height:100%;">
-                </div>
-                <div class="card-desc">
-                    <!-- Display item title and location from the database -->
-                    <p><strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
-                    <p><?php echo htmlspecialchars($item['Location']); ?></p>
-                </div>
-                <button class="card-btn">Claim</button>
+<section class="browse-container">
+    
+    <?php foreach ($items as $item): ?>
+        <div class="browse-card">
+            <div class="browse-image-area">
+                <img src="../Assets/Media/<?php echo !empty($item['Image']) ? htmlspecialchars($item['Image']) : 'pixel_sparkle.png'; ?>" alt="Item Image">
             </div>
-        <?php endforeach; ?>
+            <div class="card-desc">
+                <p><strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
+                <p><?php echo htmlspecialchars($item['Location']); ?></p>
+            </div>
+            <button class="card-btn" style="margin-top: auto;">Claim</button>
+        </div>
+    <?php endforeach; ?>
+    
+    <?php if (empty($items)): ?>
+        <p style="text-align: center; color: #31365a; width: 100%; font-size: 20px;">No found items yet.</p>
     <?php endif; ?>
+
 </section>
 
 <footer class="window-footer">

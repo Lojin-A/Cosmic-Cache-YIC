@@ -370,3 +370,58 @@ input[type="file"]::file-selector-button:hover {
     transform: translateY(-2px); 
     box-shadow: 0 4px 0 #4b527e;
 }
+
+/* ==================================================
+   10. BROWSE ITEMS PAGES (3 Cards Layout)
+================================================== */
+.browse-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; 
+    gap: 25px;
+    padding: 20px 30px 40px;
+}
+
+.browse-card {
+    background-color: #8c9acb; 
+    border: 4px solid #4b527e;
+    border-radius: 8px;
+    padding: 15px;
+    width: 30%; /* This magic number forces exactly 3 cards per row! */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.browse-image-area {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* THE FIX: This forces a perfect square like your sketch! */
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 3px solid #4b527e; /* THE FIX: Solid border instead of dashed! */
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.browse-image-area img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Stops images from looking squished */
+}
+/* ==================================================
+   11. MOBILE RESPONSIVENESS (Browse Pages)
+================================================== */
+@media (max-width: 768px) {
+    .browse-container { 
+        flex-direction: column; 
+        align-items: center; 
+    }
+    .browse-card { 
+        width: 100%; 
+        max-width: 400px; 
+    }
+}

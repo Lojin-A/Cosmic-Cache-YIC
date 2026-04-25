@@ -4,20 +4,22 @@ require '../includes/db_connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-$title = $_POST['item-name'];
-$location = $_POST['item-location'];
-$description = $_POST['item-description'];
-$date = $_POST['item-date'];
+    $title = $_POST['item-name'];
+    $location = $_POST['item-location'];
+    $description = $_POST['item-description'];
+    $date = $_POST['item-date'];
 
-$user_id = $_SESSION['user_id']; 
+    $user_id = $_SESSION['user_id']; 
 
-$sql = "INSERT INTO Items (User_id, Title, Description, Type, Location, Event_date)
-VALUES (?, ?, ?, 'Lost', ?, ?)";
+    // FIX: Added 'Pending' status and redirect!
+    $sql = "INSERT INTO Items (User_id, Title, Description, Type, Location, Event_date, Status)
+            VALUES (?, ?, ?, 'Lost', ?, ?, 'Pending')";
 
-$stmt = $conn->prepare($sql);
-$stmt->execute([$user_id, $title, $description, $location, $date]);
-
-echo "Data inserted successfully!";
+    $stmt = $conn->prepare($sql);
+    if($stmt->execute([$user_id, $title, $description, $location, $date])) {
+        header("Location: lost_items.php");
+        exit();
+    }
 }
 
 // 1. Check if the user is logged in
@@ -45,7 +47,7 @@ if (isset($_SESSION['user_id'])) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Report Lost Item - Cosmic Cache YIC</title>
-<link rel="stylesheet" href="../Assets/CSS/style.css">
+<link rel="stylesheet" href="../Assets/CSS/style.css?v=7">
 </head>
 
 <body>
@@ -66,47 +68,48 @@ if (isset($_SESSION['user_id'])) {
 </nav>
 </header>
 
-<section class="form-section post-page">
-    <h2 class="form-title">Report A Lost Item</h2>
-<div class="form-card">
+<section class="form-section post-page" style="flex-direction: column; align-items: center; padding-top: 20px;">
+    
+    <h2 class="form-title" style="text-align: center; width: 100%; margin-bottom: 15px;">Report A Lost Item</h2>
 
+    <div class="form-card" style="max-width: 650px; width: 100%;">
 
-<form id="report-lost-form" method="POST">
+        <form id="report-lost-form" method="POST" enctype="multipart/form-data">
 
-<div class="input-group">
-<label>Item Name :</label>
-<input type="text" name="item-name" id="item-name" placeholder="What did you lose?" required>
-</div>
+            <div class="input-group">
+                <label>Item Name :</label>
+                <input type="text" name="item-name" id="item-name" placeholder="What did you lose?" required>
+            </div>
 
-<div class="input-group">
-<label>Last Seen At :</label>
-<input type="text" name="item-location" id="item-location" placeholder="e.g. Lab 4" required>
-</div>
+            <div class="input-group">
+                <label>Last Seen At :</label>
+                <input type="text" name="item-location" id="item-location" placeholder="e.g. Lab 4" required>
+            </div>
 
-<div class="input-group">
-<label>Date :</label>
-<input type="date" name="item-date" id="item-date">
-</div>
+            <div class="input-group">
+                <label>Date :</label>
+                <input type="date" name="item-date" id="item-date" required>
+            </div>
 
-<div class="input-group">
-<label>Description :</label>
-<input type="text" name="item-description" id="item-description" placeholder="Color, brand, etc...">
-</div>
+            <div class="input-group">
+                <label>Description :</label>
+                <input type="text" name="item-description" id="item-description" placeholder="Color, brand, etc...">
+            </div>
 
-<div class="input-group">
-<label>
-Upload Photo :<br>
-<span class="sub-greeting">optional</span>
-</label>
-<input type="file" id="item-photo" accept="image/*">
-</div>
+            <div class="input-group">
+                <label>
+                    Upload Photo :<br>
+                    <span class="sub-greeting">optional</span>
+                </label>
+                <input type="file" name="item-photo" id="item-photo" accept="image/*">
+            </div>
 
-<p id="report-error" class="error-text hidden"></p>
+            <p id="report-error" class="error-text hidden"></p>
 
-<button type="submit" class="card-btn form-btn">Submit</button>
-</form>
+            <button type="submit" class="card-btn form-btn">Submit</button>
+        </form>
 
-</div>
+    </div>
 </section>
 
 <footer class="window-footer">

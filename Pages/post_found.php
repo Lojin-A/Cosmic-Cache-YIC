@@ -8,8 +8,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['found-item-description'];
     $user_id = $_SESSION['user_id']; 
 
-    $sql = "INSERT INTO items (User_id, Title, Description, Type, Location, Status)
-            VALUES (?, ?, ?, 'Found', ?, 'found')";
+    $sql = "INSERT INTO Items (User_id, Title, Description, Type, Location, Status)
+            VALUES (?, ?, ?, 'Found', ?, 'Pending')";
 
 $stmt = $conn->prepare($sql);
     if($stmt->execute([$user_id, $title, $description, $location])) {
@@ -27,7 +27,6 @@ if (isset($_SESSION['user_id'])) {
     $is_logged_in = true;
     $user_name = $_SESSION['name'];
     
-    // Grab their email from the database for the My Account popup
     $sql = "SELECT Email FROM User WHERE User_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$_SESSION['user_id']]);
@@ -43,7 +42,7 @@ if (isset($_SESSION['user_id'])) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Post Found Item - Cosmic Cache YIC</title>
-<link rel="stylesheet" href="../Assets/CSS/style.css">
+<link rel="stylesheet" href="../Assets/CSS/style.css?v=7">
 </head>
 
 <body>
@@ -64,42 +63,43 @@ if (isset($_SESSION['user_id'])) {
 </nav>
 </header>
 
-<section class="form-section post-page">
-    <h2 class="form-title">Post A Found Item</h2>
-<div class="form-card" style="max-width: 650px;">
+<section class="form-section post-page" style="flex-direction: column; align-items: center;">
+    
+    <h2 class="form-title" style="text-align: center; width: 100%;">Post A Found Item</h2>
 
+    <div class="form-card" style="max-width: 650px; width: 100%;">
+        
+        <form id="report-found-form" method="POST" action="post_found.php" enctype="multipart/form-data">
 
-<form id="report-found-form" method="POST" action="post_found.php" enctype="multipart/form-data">
+            <div class="input-group">
+                <label>Item Name :</label>
+                <input type="text" name="found-item-name" id="found-item-name" placeholder="What did you find?" required>
+            </div>
 
-<div class="input-group">
-<label>Item Name :</label>
-<input type="text" name="found-item-name" id="found-item-name" placeholder="What did you find?" required>
-</div>
+            <div class="input-group">
+                <label>Where was it found? :</label>
+                <input type="text" name="found-item-location" id="found-item-location" placeholder="e.g. Near the library" required>
+            </div>
 
-<div class="input-group">
-<label>Where was it found? :</label>
-<input type="text" name="found-item-location" id="found-item-location" placeholder="e.g. Near the library" required>
-</div>
+            <div class="input-group">
+                <label>Description :</label>
+                <input type="text" name="found-item-description" id="found-item-description" placeholder="Color, brand, etc...">
+            </div>
 
-<div class="input-group">
-<label>Description :</label>
-<input type="text" name="found-item-description" id="found-item-description" placeholder="Color, brand, etc...">
-</div>
+            <div class="input-group">
+                <label>
+                    Upload Photo :<br>
+                    <span class="sub-greeting">optional</span>
+                </label>
+                <input type="file" name="found-item-photo" accept="image/*">
+            </div>
 
-<div class="input-group">
-<label>
-Upload Photo :<br>
-<span class="sub-greeting">optional</span>
-</label>
-<input type="file" name="found-item-photo" accept="image/*">
-</div>
+            <p id="found-error" class="error-text hidden"></p>
 
-<p id="found-error" class="error-text hidden"></p>
+            <button type="submit" class="card-btn form-btn">Submit</button>
+        </form>
 
-<button type="submit" class="card-btn form-btn">Submit</button>
-</form>
-
-</div>
+    </div>
 </section>
 
 <footer class="window-footer">
@@ -127,7 +127,7 @@ Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
 
     </main>
 
-<!--script src="../Assets/JS/script.js"></script-->
+<script src="../Assets/JS/script.js"></script>
 
 </body>
 </html>
