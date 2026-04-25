@@ -1,98 +1,123 @@
 <?php
 session_start();
 require '../Includes/db_connect.php';
-$stmt = $conn->prepare("SELECT * FROM items WHERE status = 'lost'");
+$stmt = $conn->prepare("SELECT * FROM items WHERE Status = 'found' ORDER BY Item_id DESC");
 $stmt->execute();
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// 1. Check if the user is logged in
+$is_logged_in = false;
+$user_name = "";
+$user_email = "";
+
+if (isset($_SESSION['user_id'])) {
+    $is_logged_in = true;
+    $user_name = $_SESSION['name'];
+    
+    // Grab their email from the database for the My Account popup
+    $sql = "SELECT Email FROM User WHERE User_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$_SESSION['user_id']]);
+    $user = $stmt->fetch();
+    if ($user) {
+        $user_email = $user['Email'];
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Post Found Item - Cosmic Cache YIC</title>
+<title>Lost Items</title>
 <link rel="stylesheet" href="../Assets/CSS/style.css">
 </head>
 
 <body>
-
 <main class="os-window">
 
 <header class="window-topbar">
 <a href="../index.php" class="title-link">
 <div class="title-group">
-<img src="../Assets/Media/pixel_sparkle.png" alt="icon" class="title-icon">
+<img src="../Assets/Media/pixel_sparkle.png" class="title-icon">
 <div class="window-title">Cosmic Cache YIC</div>
 </div>
 </a>
+
 <nav class="top-nav">
-<a href="#" class="nav-pill" id="btn-account">My Account</a>
-<a href="#" class="nav-pill" id="btn-notifications">Notifications</a>
+<a href="#" id="btn-account" class="nav-pill">My Account</a>
+<a href="#" id="btn-notifications" class="nav-pill">Notifications</a>
 <a href="logout.php" class="nav-pill logout-pill">Log out</a>
 </nav>
 </header>
 
-<section class="form-section">
-<div class="form-card" style="max-width: 650px;">
-<h2 class="form-title">Post A Found Item</h2>
+<section class="welcome-section">
+<a href="post_lost.php" class="nav-pill" style="display: inline-block; padding: 10px 40px; margin-bottom: 20px;">Report a Lost Item</a>
+<h2 class="sub-greeting">Browse Lost Items</h2>
+</section>
 
-<form id="report-found-form" method="POST">
+<section class="card-container">
 
-<div class="input-group">
-<label>Item Name :</label>
-<input type="text" name="found-item-name" id="found-item-name" placeholder="What did you find?" required>
+<div class="action-card">
+<div class="image-area-img">
+<img src="../Assets/Media/found_lost1.jpg" style="width:100%; height:100%;"></div>
+<div class="card-desc">
+<p>_________</p>
+<p>_________</p>
+</div>
+<button class="card-btn">Claim</button>
 </div>
 
-<div class="input-group">
-<label>Where was it found? :</label>
-<input type="text" name="found-item-location" id="found-item-location" placeholder="e.g. Near the library" required>
+<div class="action-card">
+<div class="image-area-img">
+<img src="../Assets/Media/found_lost2.jpg" style="width:100%; height:100%;">
+</div>
+<div class="card-desc">
+<p>_________</p>
+<p>_________</p>
+</div>
+<button class="card-btn">Claim</button>
 </div>
 
-<div class="input-group">
-<label>Description :</label>
-<input type="text" name="found-item-description" id="found-item-description" placeholder="Color, brand, etc...">
+<div class="action-card">
+<div class="image-area-img">
+<img src="../Assets/Media/found-lost3.jpg" style="width:100%; height:100%;">
+</div>
+<div class="card-desc">
+<p>_________</p>
+<p>_________</p>
+</div>
+<button class="card-btn">Claim</button>
 </div>
 
-<div class="input-group">
-<label>
-Upload Photo :<br>
-<span class="sub-greeting">optional</span>
-</label>
-<input type="file" id="found-item-photo" accept="image/*">
-</div>
-
-<p id="found-error" class="error-text hidden"></p>
-
-<button type="submit" class="card-btn form-btn">Submit</button>
-</form>
-
-</div>
 </section>
 
 <footer class="window-footer">
 Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
 </footer>
 
-<div id="popup-notifications" class="popup-overlay hidden">
-<div class="popup-box">
-<h3>Notifications</h3>
-<p>You have no new notifications at this time.</p>
-<button class="card-btn" onclick="closePopups()">Close</button>
-</div>
-</div>
+        <?php if ($is_logged_in): ?>
+            <div id="popup-notifications" class="popup-overlay hidden">
+                <div class="popup-box">
+                    <h3>Notifications</h3>
+                    <p>You have no new notifications at this time.</p>
+                    <button class="card-btn" onclick="closePopups()">Close</button>
+                </div>
+            </div>
 
-<div id="popup-account" class="popup-overlay hidden">
-<div class="popup-box">
-<h3>Your Profile</h3>
-<p><strong>Name:</strong> Lojin</p>
-<p><strong>Email:</strong> lojin@example.com</p>
-<button class="card-btn" onclick="closePopups()">Close</button>
-</div>
-</div>
+            <div id="popup-account" class="popup-overlay hidden">
+                <div class="popup-box">
+                    <h3>Your Profile</h3>
+                    <p><strong>Name:</strong> <?php echo htmlspecialchars($user_name); ?></p>
+                    <p><strong>Email:</strong> <?php echo htmlspecialchars($user_email); ?></p>
+                    <button class="card-btn" onclick="closePopups()">Close</button>
+                </div>
+            </div>
+        <?php endif; ?>
 
-</main>
+    </main>
 
 <script src="../Assets/JS/script.js"></script>
-
 </body>
 </html>
