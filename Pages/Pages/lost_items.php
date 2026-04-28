@@ -2,11 +2,11 @@
 session_start();
 require '../Includes/db_connect.php';
 
-$stmt = $conn->prepare("SELECT * FROM Items WHERE Type = 'Found' AND Status = 'Approved' ORDER BY Item_id DESC");
+// Fix: Pull Approved Lost Items
+$stmt = $conn->prepare("SELECT * FROM Items WHERE Type = 'Lost' AND Status = 'Approved' ORDER BY Item_id DESC");
 $stmt->execute();
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// 1. Check if the user is logged in
 $is_logged_in = false;
 $user_name = "";
 $user_email = "";
@@ -15,11 +15,10 @@ if (isset($_SESSION['user_id'])) {
     $is_logged_in = true;
     $user_name = $_SESSION['name'];
     
-    // Grab their email from the database for the My Account popup
     $sql = "SELECT Email FROM User WHERE User_id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([$_SESSION['user_id']]);
-    $user = $stmt->fetch();
+    $user_stmt = $conn->prepare($sql);
+    $user_stmt->execute([$_SESSION['user_id']]);
+    $user = $user_stmt->fetch();
     if ($user) {
         $user_email = $user['Email'];
     }
@@ -31,8 +30,8 @@ if (isset($_SESSION['user_id'])) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Found Items</title>
-<link rel="stylesheet" href="../Assets/CSS/style.css">
+<title>Lost Items</title>
+<link rel="stylesheet" href="../Assets/CSS/style.css?v=3">
 </head>
 
 <body>
@@ -54,30 +53,58 @@ if (isset($_SESSION['user_id'])) {
 </header>
 
 <section class="welcome-section">
-<a href="post_found.php" class="nav-pill" style="display: inline-block; padding: 10px 40px; margin-bottom: 20px;">Post a New Found Item</a>
-<h2 class="sub-greeting">Browse Found Items</h2>
+<a href="post_lost.php" class="nav-pill" style="display: inline-block; padding: 10px 40px; margin-bottom: 20px;">Report a Lost Item</a>
+<h2 class="sub-greeting">Browse Lost Items</h2>
 </section>
 
-<section class="card-container">
-   <?php if (empty($items)): ?>
-    <?php else: ?>
-        <?php foreach($items as $item): ?>
-            <div class="browse-card">
-                <div class="browse-image-area">
-                    <?php if(!empty($item['Image'])): ?>
-                        <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>">
-                    <?php else: ?>
-                        <p style="color: #31365a;">No Image</p>
-                    <?php endif; ?>
-                </div>
-                <div class="card-desc">
-                    <p><strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
-                    <p><?php echo htmlspecialchars($item['Location']); ?></p>
-                </div>
-                <button class="card-btn">Claim</button>
+<section class="browse-container">
+
+    <div class="browse-card">
+        <div class="browse-image-area">
+            <img src="../Assets/Media/found_lost1.jpg">
+        </div>
+        <div class="card-desc">
+            <p>Hand Cream</p>
+            <p>2026-04-10</p>
+        </div>
+        </div>
+
+    <div class="browse-card">
+        <div class="browse-image-area">
+            <img src="../Assets/Media/found_lost2.jpg">
+        </div>
+        <div class="card-desc">
+            <p>Fancy Pen</p>
+            <p>2026-04-12</p>
+        </div>
+    </div>
+
+    <div class="browse-card">
+        <div class="browse-image-area">
+            <img src="../Assets/Media/found-lost3.jpg">
+        </div>
+        <div class="card-desc">
+            <p>Ring</p>
+            <p>2026-04-15</p>
+        </div>
+    </div>
+
+    <?php foreach($items as $item): ?>
+        <div class="browse-card">
+            <div class="browse-image-area">
+                <?php if(!empty($item['Image'])): ?>
+                    <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>">
+                <?php else: ?>
+                    <p style="color: #31365a;">No Image</p>
+                <?php endif; ?>
             </div>
-        <?php endforeach; ?>
-    <?php endif; ?>
+            <div class="card-desc">
+                <p><?php echo htmlspecialchars($item['Title']); ?></p>
+                <p><?php echo htmlspecialchars($item['Event_date']); ?></p>
+            </div>
+        </div>
+    <?php endforeach; ?>
+
 </section>
 
 <footer class="window-footer">

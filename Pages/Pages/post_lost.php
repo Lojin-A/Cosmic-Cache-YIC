@@ -1,27 +1,25 @@
 <?php
 session_start();
-require '../Includes/db_connect.php';
+require '../includes/db_connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
-    $title = $_POST['found-item-name']; 
-    $location = $_POST['found-item-location'];
-    $description = $_POST['found-item-description'];
-    $date = date('Y-m-d');
+    $title = $_POST['item-name'];
+    $location = $_POST['item-location'];
+    $description = $_POST['item-description'];
+    $date = $_POST['item-date'];
 
-    $status = 'Pending';
+    $user_id = $_SESSION['user_id']; 
 
-    $user_id = $_SESSION['user_id'];
-
-    $sql = "INSERT INTO Items 
-            (User_id, Title, Description, Type, Location, Event_date, Status)
-            VALUES (?, ?, ?, 'Found', ?, ?, Approved)";
+    // FIX: Added 'Pending' status and redirect!
+    $sql = "INSERT INTO Items (User_id, Title, Description, Type, Location, Event_date, Status)
+            VALUES (?, ?, ?, 'Lost', ?, ?, 'Pending')";
 
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$user_id, $title, $description, $location, $date, $status]);
-
-    header("Location: found_items.php?success=1");
-    exit();
+    if($stmt->execute([$user_id, $title, $description, $location, $date])) {
+        header("Location: lost_items.php");
+        exit();
+    }
 }
 
 // 1. Check if the user is logged in
@@ -33,6 +31,7 @@ if (isset($_SESSION['user_id'])) {
     $is_logged_in = true;
     $user_name = $_SESSION['name'];
     
+    // Grab their email from the database for the My Account popup
     $sql = "SELECT Email FROM User WHERE User_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$_SESSION['user_id']]);
@@ -47,7 +46,7 @@ if (isset($_SESSION['user_id'])) {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Post Found Item - Cosmic Cache YIC</title>
+<title>Report Lost Item - Cosmic Cache YIC</title>
 <link rel="stylesheet" href="../Assets/CSS/style.css?v=7">
 </head>
 
@@ -69,27 +68,32 @@ if (isset($_SESSION['user_id'])) {
 </nav>
 </header>
 
-<section class="form-section post-page" style="flex-direction: column; align-items: center;">
+<section class="form-section post-page" style="flex-direction: column; align-items: center; padding-top: 20px;">
     
-    <h2 class="form-title" style="text-align: center; width: 100%;">Post A Found Item</h2>
+    <h2 class="form-title" style="text-align: center; width: 100%; margin-bottom: 15px;">Report A Lost Item</h2>
 
     <div class="form-card" style="max-width: 650px; width: 100%;">
-        
-        <form id="report-found-form" method="POST" action="post_found.php" enctype="multipart/form-data">
+
+        <form id="report-lost-form" method="POST" enctype="multipart/form-data">
 
             <div class="input-group">
                 <label>Item Name :</label>
-                <input type="text" name="found-item-name" id="found-item-name" placeholder="What did you find?" required>
+                <input type="text" name="item-name" id="item-name" placeholder="What did you lose?" required>
             </div>
 
             <div class="input-group">
-                <label>Where was it found? :</label>
-                <input type="text" name="found-item-location" id="found-item-location" placeholder="e.g. Near the library" required>
+                <label>Last Seen At :</label>
+                <input type="text" name="item-location" id="item-location" placeholder="e.g. Lab 4" required>
+            </div>
+
+            <div class="input-group">
+                <label>Date :</label>
+                <input type="date" name="item-date" id="item-date" required>
             </div>
 
             <div class="input-group">
                 <label>Description :</label>
-                <input type="text" name="found-item-description" id="found-item-description" placeholder="Color, brand, etc...">
+                <input type="text" name="item-description" id="item-description" placeholder="Color, brand, etc...">
             </div>
 
             <div class="input-group">
@@ -97,10 +101,10 @@ if (isset($_SESSION['user_id'])) {
                     Upload Photo :<br>
                     <span class="sub-greeting">optional</span>
                 </label>
-                <input type="file" name="item-photo"  id="found-item-photo" accept="image/*">
+                <input type="file" name="item-photo" id="item-photo" accept="image/*">
             </div>
 
-            <p id="found-error" class="error-text hidden"></p>
+            <p id="report-error" class="error-text hidden"></p>
 
             <button type="submit" class="card-btn form-btn">Submit</button>
         </form>
@@ -132,7 +136,6 @@ Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
         <?php endif; ?>
 
     </main>
-
 <script src="../Assets/JS/script.js"></script>
 
 </body>
