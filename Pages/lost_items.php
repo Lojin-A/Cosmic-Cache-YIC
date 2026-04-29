@@ -6,7 +6,6 @@ $stmt = $conn->prepare("SELECT * FROM Items WHERE Type = 'Lost' AND Status = 'Ap
 $stmt->execute();
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// 1. Check if the user is logged in
 $is_logged_in = false;
 $user_name = "";
 $user_email = "";
@@ -15,7 +14,6 @@ if (isset($_SESSION['user_id'])) {
     $is_logged_in = true;
     $user_name = $_SESSION['name'];
     
-// Grab their email from the database for the My Account popup
     $sql = "SELECT Email FROM User WHERE User_id = ?";
     $user_stmt = $conn->prepare($sql);
     $user_stmt->execute([$_SESSION['user_id']]);

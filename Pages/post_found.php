@@ -24,7 +24,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 
-// 1. Check if the user is logged in
 $is_logged_in = false;
 $user_name = "";
 $user_email = "";

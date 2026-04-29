@@ -8,23 +8,17 @@ $submitted_email = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $password = $_POST['password'];
-
-    // Remember the email they just typed so we can put it back in the box
     $submitted_email = htmlspecialchars($email);
-
-    // find user in database
     $sql = "SELECT * FROM User WHERE Email = ? AND Password = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$email, $password]);
     $user = $stmt->fetch();
 
-    // if user exists
     if ($user) {
         $_SESSION['user_id'] = $user['User_id'];
         $_SESSION['role'] = $user['Role'];     
         $_SESSION['name'] = $user['Name'];
         
-        // check role for routing
         if ($_SESSION['role'] === 'admin') {
             header("Location: admin.php"); 
         } else {
@@ -32,7 +26,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         exit();
     } else {
-        // JS can't check this! Only PHP knows if the password is wrong in the database.
         $error = "Incorrect email or password.";
     }
 }
