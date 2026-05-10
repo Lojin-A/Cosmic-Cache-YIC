@@ -1,8 +1,6 @@
 <?php
 session_start();
 require '../includes/db_connect.php';
-
-// 1. SECURITY: Kick them out if they are not the Admin!
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: ../index.php");
     exit();
@@ -11,7 +9,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 $admin_message = "";
 
 // =========================================================
-// 2. HANDLE ADMIN BUTTON CLICKS
+// 1. HANDLE ADMIN BUTTON CLICKS
 // =========================================================
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     $action = $_POST['action'];
@@ -19,31 +17,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     $claim_id = $_POST['claim_id'] ?? null;
 
     if ($action == 'deny_item') {
-        // Deny Post: Delete it
+        
         $stmt = $conn->prepare("DELETE FROM Items WHERE Item_id = ?");
         $stmt->execute([$item_id]);
         $admin_message = "Item denied and deleted. Notification sent to user.";
     } 
     elseif ($action == 'accept_item') {
-        // Accept Post: Change status to Approved
+        
         $stmt = $conn->prepare("UPDATE Items SET Status = 'Approved' WHERE Item_id = ?");
         $stmt->execute([$item_id]);
         $admin_message = "Item approved! Notification sent to user.";
     } 
     elseif ($action == 'delete_lost') {
-        // Manually Delete Approved Lost Item
+        
         $stmt = $conn->prepare("DELETE FROM Items WHERE Item_id = ?");
         $stmt->execute([$item_id]);
         $admin_message = "Lost item manually deleted.";
     } 
     elseif ($action == 'approve_claim') {
-        // Approve Claim: Delete the item (which deletes the claim via CASCADE)
+        
         $stmt = $conn->prepare("DELETE FROM Items WHERE Item_id = ?");
         $stmt->execute([$item_id]);
         $admin_message = "Claim approved! Item removed and notification sent to user to visit office.";
     } 
     elseif ($action == 'reject_claim') {
-        // Reject Claim: Delete the claim only, keep the item
+        
         $stmt = $conn->prepare("DELETE FROM Claim WHERE Claim_id = ?");
         $stmt->execute([$claim_id]);
         $admin_message = "Claim rejected. Item remains on the site. Notification sent to user.";
@@ -51,18 +49,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
 }
 
 // =========================================================
-// 3. FETCH DATA FOR THE DASHBOARD
+// 2. FETCH DATA FOR THE DASHBOARD
 // =========================================================
 
-// Fetch Pending Items
 $pending_items_stmt = $conn->query("SELECT * FROM Items WHERE Status = 'Pending'");
 $pending_items = $pending_items_stmt->fetchAll();
 
-// Fetch Approved LOST Items (So admin can manually delete them later)
 $approved_lost_stmt = $conn->query("SELECT * FROM Items WHERE Status = 'Approved' AND Type = 'Lost'");
 $approved_lost_items = $approved_lost_stmt->fetchAll();
 
-// Fetch Pending Claims (Join with Items and User to get names and titles)
 $claims_sql = "
     SELECT Claim.Claim_id, Claim.Item_id, Items.Title, User.Name AS ClaimerName 
     FROM Claim 

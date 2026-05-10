@@ -7,16 +7,11 @@ $submitted_name = "";
 $submitted_email = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get data from the form
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
-
-    // Remember what they typed in case there is an error
     $submitted_name = htmlspecialchars($name);
     $submitted_email = htmlspecialchars($email);
-
-    // 1. Check if the email already exists in the database
     $check_sql = "SELECT * FROM User WHERE Email = ?";
     $check_stmt = $conn->prepare($check_sql);
     $check_stmt->execute([$email]);
@@ -24,17 +19,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($check_stmt->rowCount() > 0) {
         $error = "This email is already registered. Please log in.";
     } else {
-        // 2. Insert the new user into the database
         $insert_sql = "INSERT INTO User (Email, Name, Password, Role) VALUES (?, ?, ?, 'Student')";
         $insert_stmt = $conn->prepare($insert_sql);
         
         if ($insert_stmt->execute([$email, $name, $password])) {
-            // Success! Pin their new badge to their shirt and log them in
-            $_SESSION['user_id'] = $conn->lastInsertId(); // Gets the new User_id
+            $_SESSION['user_id'] = $conn->lastInsertId(); 
             $_SESSION['role'] = 'Student';
             $_SESSION['name'] = $name;
 
-            // Send them straight to the homepage
             header("Location: ../index.php");
             exit();
         } else {
