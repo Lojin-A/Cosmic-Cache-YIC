@@ -1,6 +1,6 @@
 <?php
 session_start();
-require '../Includes/db_connect.php';
+require '../includes/db_connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -9,17 +9,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['item-description'];
     $date = $_POST['item-date'];
 
-    $user_id = $_SESSION['user_id'];
+    $user_id = $_SESSION['user_id']; 
 
-    $sql = "INSERT INTO Items 
-            (User_id, Title, Description, Type, Location, Event_date, Status)
-            VALUES (?, ?, ?, 'Found', ?, ?, 'Pending')";
+    // FIX: Added 'Pending' status and redirect!
+    $sql = "INSERT INTO Items (User_id, Title, Description, Type, Location, Event_date, Status)
+            VALUES (?, ?, ?, 'Lost', ?, ?, 'Pending')";
 
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$user_id, $title, $description, $location, $date]);
-
-    header("Location: lost_items.php?success=1");
-    exit();
+    if($stmt->execute([$user_id, $title, $description, $location, $date])) {
+        header("Location: lost_items.php");
+        exit();
+    }
 }
 
 // 1. Check if the user is logged in

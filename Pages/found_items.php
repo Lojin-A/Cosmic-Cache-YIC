@@ -2,6 +2,7 @@
 session_start();
 require '../Includes/db_connect.php';
 
+// Fetch Approved Found Items from the database
 $stmt = $conn->prepare("SELECT * FROM Items WHERE Type = 'Found' AND Status = 'Approved' ORDER BY Item_id DESC");
 $stmt->execute();
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -32,7 +33,7 @@ if (isset($_SESSION['user_id'])) {
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Found Items</title>
-<link rel="stylesheet" href="../Assets/CSS/style.css">
+<link rel="stylesheet" href="../Assets/CSS/style.css?v=5">
 </head>
 
 <body>
@@ -58,26 +59,25 @@ if (isset($_SESSION['user_id'])) {
 <h2 class="sub-greeting">Browse Found Items</h2>
 </section>
 
-<section class="card-container">
-   <?php if (empty($items)): ?>
-    <?php else: ?>
-        <?php foreach($items as $item): ?>
-            <div class="browse-card">
-                <div class="browse-image-area">
-                    <?php if(!empty($item['Image'])): ?>
-                        <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>">
-                    <?php else: ?>
-                        <p style="color: #31365a;">No Image</p>
-                    <?php endif; ?>
-                </div>
-                <div class="card-desc">
-                    <p><strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
-                    <p><?php echo htmlspecialchars($item['Location']); ?></p>
-                </div>
-                <button class="card-btn">Claim</button>
+<section class="browse-container">
+    
+    <?php foreach ($items as $item): ?>
+        <div class="browse-card">
+            <div class="browse-image-area">
+                <img src="../Assets/Media/<?php echo !empty($item['Image']) ? htmlspecialchars($item['Image']) : 'pixel_sparkle.png'; ?>" alt="Item Image">
             </div>
-        <?php endforeach; ?>
+            <div class="card-desc">
+                <p><strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
+                <p><?php echo htmlspecialchars($item['Location']); ?></p>
+            </div>
+            <button class="card-btn" style="margin-top: auto;">Claim</button>
+        </div>
+    <?php endforeach; ?>
+    
+    <?php if (empty($items)): ?>
+        <p style="text-align: center; color: #31365a; width: 100%; font-size: 20px;">No found items yet.</p>
     <?php endif; ?>
+
 </section>
 
 <footer class="window-footer">
