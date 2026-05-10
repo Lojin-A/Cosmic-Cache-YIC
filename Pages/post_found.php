@@ -3,21 +3,28 @@ session_start();
 require '../Includes/db_connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $title = $_POST['found-item-name'];
+
+    $title = $_POST['found-item-name']; 
     $location = $_POST['found-item-location'];
     $description = $_POST['found-item-description'];
-    $user_id = $_SESSION['user_id']; 
+    $date = date('Y-m-d');
 
-    $sql = "INSERT INTO Items (User_id, Title, Description, Type, Location, Status)
-            VALUES (?, ?, ?, 'Found', ?, 'Pending')";
+    $status = 'Pending';
 
-$stmt = $conn->prepare($sql);
-    if($stmt->execute([$user_id, $title, $description, $location])) {
-        header("Location: found_items.php"); 
-        exit();
-    }
+    $user_id = $_SESSION['user_id'];
+
+    $sql = "INSERT INTO Items 
+            (User_id, Title, Description, Type, Location, Event_date, Status)
+            VALUES (?, ?, ?, 'Found', ?, ?, 'Pending')";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$user_id, $title, $description, $location, $date, $status]);
+
+    header("Location: found_items.php?success=1");
+    exit();
 }
 
+// 1. Check if the user is logged in
 $is_logged_in = false;
 $user_name = "";
 $user_email = "";
@@ -90,7 +97,7 @@ if (isset($_SESSION['user_id'])) {
                     Upload Photo :<br>
                     <span class="sub-greeting">optional</span>
                 </label>
-                <input type="file" name="found-item-photo" accept="image/*">
+                <input type="file" name="item-photo"  id="found-item-photo" accept="image/*">
             </div>
 
             <p id="found-error" class="error-text hidden"></p>
