@@ -367,7 +367,7 @@ input[type="file"]::file-selector-button:hover {
 }
 
 /* ==================================================
-   10. BROWSE ITEMS PAGES (3 Cards Layout)
+   10. BROWSE ITEMS PAGES (3 Cards Layout + Scrolling)
 ================================================== */
 .browse-container {
     display: flex;
@@ -375,6 +375,11 @@ input[type="file"]::file-selector-button:hover {
     flex-wrap: wrap; 
     gap: 25px;
     padding: 20px 30px 40px;
+    
+    /* THE NEW MAGIC: Turns into a scrollbox when the 2nd row hits! */
+    max-height: 480px; 
+    overflow-y: auto;
+    width: 100%;
 }
 
 .browse-card {

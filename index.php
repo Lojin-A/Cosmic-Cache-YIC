@@ -43,7 +43,12 @@ if (isset($_SESSION['user_id'])) {
             <nav class="top-nav">
                 <?php if ($is_logged_in): ?>
                     <a href="#" id="btn-account" class="nav-pill">My Account</a>
-                    <a href="#" id="btn-notifications" class="nav-pill">Notifications</a>
+                    
+                    <a href="#" id="btn-notifications" class="nav-pill" style="position: relative;">
+                        Notifications
+                        <span id="unread-dot" class="hidden" style="position: absolute; top: -2px; right: -2px; height: 14px; width: 14px; background-color: #d9534f; border-radius: 50%; border: 2px solid #31365a;"></span>
+                    </a>
+                    
                     <a href="Pages/logout.php" class="nav-pill logout-pill">Log out</a>
                 <?php else: ?>
                     <a href="Pages/log_in.php" class="nav-pill logout-pill">Log in</a>
@@ -90,10 +95,20 @@ if (isset($_SESSION['user_id'])) {
             <div id="popup-notifications" class="popup-overlay hidden">
                 <div class="popup-box">
                     <h3>Notifications</h3>
-                    <p>You have no new notifications at this time.</p>
-                    <button class="card-btn" onclick="closePopups()">Close</button>
+                    
+                    <div id="notif-content" style="max-height: 200px; overflow-y: auto; text-align: left; margin-bottom: 20px;">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="card-btn" id="btn-clear-notifs" style="background-color: #d9534f; color: white;">Clear All</button>
+                        <button class="card-btn" onclick="closePopups()">Close</button>
+                    </div>
                 </div>
             </div>
+
+            <script>
+                const currentUserId = "<?php echo $_SESSION['user_id']; ?>";
+            </script>
 
             <div id="popup-account" class="popup-overlay hidden">
                 <div class="popup-box">

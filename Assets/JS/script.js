@@ -1,23 +1,71 @@
 document.addEventListener("DOMContentLoaded", () => {
     
     // =========================================================
-    // 1. POPUP LOGIC (Runs only on pages with the top buttons)
+    // 1. POPUP LOGIC 
     // =========================================================
     const btnNotifications = document.getElementById("btn-notifications");
     const btnAccount = document.getElementById("btn-account");
     const popupNotifications = document.getElementById("popup-notifications");
     const popupAccount = document.getElementById("popup-account");
+    const unreadDot = document.getElementById("unread-dot"); 
 
     if (btnNotifications && btnAccount) {
+        if (unreadDot) {
+            if (typeof currentUserId !== 'undefined' && localStorage.getItem('unread_' + currentUserId) === 'true') {
+                unreadDot.style.display = "block"; 
+            } else {
+                unreadDot.style.display = "none";  
+            }
+        }
+        
         btnNotifications.addEventListener("click", (event) => {
             event.preventDefault(); 
+            
+            if (unreadDot) {
+                unreadDot.style.display = "none"; 
+                localStorage.setItem('unread_' + currentUserId, 'false'); 
+            }
+            
+            const notifContainer = document.getElementById("notif-content");
+            if (notifContainer) {
+                notifContainer.innerHTML = ""; 
+
+                const storedJson = localStorage.getItem('cosmic_notifs');
+                const allNotifs = storedJson ? JSON.parse(storedJson) : {};
+                const myMessages = allNotifs[currentUserId] || [];
+
+                if (myMessages.length === 0) {
+                    notifContainer.innerHTML = "<p style='text-align:center;'>You have no new notifications at this time.</p>";
+                } else {
+                    myMessages.forEach(msg => {
+                        notifContainer.innerHTML += `<p style="border-bottom: 2px dashed #92aae3; padding-bottom: 10px; font-size: 20px; color: #31365a;">✨ ${msg}</p>`;
+                    });
+                }
+            }
             popupNotifications.classList.remove("hidden");
         });
-
         btnAccount.addEventListener("click", (event) => {
             event.preventDefault(); 
             popupAccount.classList.remove("hidden");
         });
+        const btnClearNotifs = document.getElementById("btn-clear-notifs");
+        if (btnClearNotifs) {
+            btnClearNotifs.addEventListener("click", (event) => {
+                event.preventDefault();
+                
+                const storedJson = localStorage.getItem('cosmic_notifs');
+                if (storedJson && typeof currentUserId !== 'undefined') {
+                    let allNotifs = JSON.parse(storedJson);
+                    allNotifs[currentUserId] = []; // Empty the array!
+                    localStorage.setItem('cosmic_notifs', JSON.stringify(allNotifs));
+                    
+                    const notifContainer = document.getElementById("notif-content");
+                    if (notifContainer) {
+                        notifContainer.innerHTML = "<p style='text-align:center;'>You have no new notifications at this time.</p>";
+                    }
+                }
+            });
+        }
     }
 
     // =========================================================
@@ -125,74 +173,70 @@ if (loginForm) {
     }
 
     // =========================================================
-    // 5. REPORT LOST ITEM VALIDATION 
-    // =========================================================
-    const reportLostForm = document.getElementById("report-lost-form");
-    const reportError = document.getElementById("report-error");
+// 5. REPORT LOST ITEM VALIDATION 
+// =========================================================
+const reportLostForm = document.getElementById("report-lost-form");
+const reportError = document.getElementById("report-error");
 
-    if (reportLostForm) {
-        reportLostForm.addEventListener("submit", (event) => {
+if (reportLostForm) {
+    reportLostForm.addEventListener("submit", (event) => {
+
+        const itemName = document.getElementById("item-name").value.trim();
+        const itemLocation = document.getElementById("item-location").value.trim();
+        const itemDate = document.getElementById("item-date").value;
+        const itemDesc = document.getElementById("item-description").value.trim();
+        const itemPhoto = document.getElementById("item-photo").value; 
+        const today = new Date().toISOString().split('T')[0];
+        if (itemName === "" || itemLocation === "" || itemDate === "" || itemDesc === "") {
+            reportError.textContent = "Error: Please fill in all required fields!";
+            reportError.classList.remove("hidden");
+        } 
+        else if (itemDate > today) {
             event.preventDefault(); 
-
-            const itemName = document.getElementById("item-name").value.trim();
-            const itemLocation = document.getElementById("item-location").value.trim();
-            const itemDate = document.getElementById("item-date").value;
-            const itemDesc = document.getElementById("item-description").value.trim();
-            const itemPhoto = document.getElementById("item-photo").value; 
-            const today = new Date().toISOString().split('T')[0];
-
-            if (itemName === "" || itemLocation === "" || itemDate === "" || itemDesc === "") {
-                reportError.textContent = "Error: Please fill in all required fields!";
-                reportError.classList.remove("hidden");
-            } 
-            else if (itemDate > today) {
-                reportError.textContent = "Error: You cannot select a date in the future!";
-                reportError.classList.remove("hidden");
-            }
-            else if (itemPhoto !== "" && !itemPhoto.match(/\.(jpg|jpeg|png|gif)$/i)) {
-                reportError.textContent = "Error: Please upload a valid image file (JPG, PNG, GIF).";
-                reportError.classList.remove("hidden");
-            }
-            else {
-                reportError.classList.add("hidden");
-                alert("Lost item reported successfully!");
-                reportLostForm.reset(); 
-            }
-        });
-    }
-
-    // =========================================================
-    // 6. POST FOUND ITEM VALIDATION
-    // =========================================================
-    const reportFoundForm = document.getElementById("report-found-form");
-    const foundError = document.getElementById("found-error");
-
-    if (reportFoundForm) {
-        reportFoundForm.addEventListener("submit", (event) => {
+            reportError.textContent = "Error: You cannot select a date in the future!";
+            reportError.classList.remove("hidden");
+        }
+        else if (itemPhoto !== "" && !itemPhoto.match(/\.(jpg|jpeg|png|gif)$/i)) {
             event.preventDefault(); 
+            reportError.textContent = "Error: Please upload a valid image file (JPG, PNG, GIF).";
+            reportError.classList.remove("hidden");
+        }
+        else {
+            reportError.classList.add("hidden");
+        }
+    });
+}
 
-            const itemName = document.getElementById("found-item-name").value.trim();
-            const itemLocation = document.getElementById("found-item-location").value.trim();
-            const itemDesc = document.getElementById("found-item-description").value.trim();
-            const itemPhoto = document.getElementById("found-item-photo").value; 
+    // =========================================================
+// 6. POST FOUND ITEM VALIDATION
+// =========================================================
+const reportFoundForm = document.getElementById("report-found-form");
+const foundError = document.getElementById("found-error");
 
-            if (itemName === "" || itemLocation === "" || itemDesc === "") {
-                foundError.textContent = "Error: Please fill in all required fields!";
-                foundError.classList.remove("hidden");
-            } 
-            else if (itemPhoto !== "" && !itemPhoto.match(/\.(jpg|jpeg|png|gif)$/i)) {
-                foundError.textContent = "Error: Please upload a valid image file (JPG, PNG, GIF).";
-                foundError.classList.remove("hidden");
-            }
-            else {
-                foundError.classList.add("hidden");
-                alert("Found item posted successfully! Thank you for helping.");
-                reportFoundForm.reset(); 
-            }
-        });
-    }
+if (reportFoundForm) {
+    reportFoundForm.addEventListener("submit", (event) => {
+
+        const itemName = document.getElementById("found-item-name").value.trim();
+        const itemLocation = document.getElementById("found-item-location").value.trim();
+        const itemDesc = document.getElementById("found-item-description").value.trim();
+        const itemPhoto = document.getElementById("found-item-photo").value; 
+
+        if (itemName === "" || itemLocation === "" || itemDesc === "") {
+            event.preventDefault(); 
+            foundError.textContent = "Error: Please fill in all required fields!";
+            foundError.classList.remove("hidden");
+        } 
+        else if (itemPhoto !== "" && !itemPhoto.match(/\.(jpg|jpeg|png|gif)$/i)) {
+            event.preventDefault(); 
+            foundError.textContent = "Error: Please upload a valid image file (JPG, PNG, GIF).";
+            foundError.classList.remove("hidden");
+        }
+        else {
+            foundError.classList.add("hidden");
+        }
+    });
+}
 });
-
 // =========================================================
 // 4. GLOBAL FUNCTIONS
 // =========================================================

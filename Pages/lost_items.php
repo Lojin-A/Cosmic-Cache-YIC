@@ -6,7 +6,6 @@ $stmt = $conn->prepare("SELECT * FROM Items WHERE Type = 'Lost' AND Status = 'Ap
 $stmt->execute();
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// 1. Check if the user is logged in
 $is_logged_in = false;
 $user_name = "";
 $user_email = "";
@@ -15,7 +14,6 @@ if (isset($_SESSION['user_id'])) {
     $is_logged_in = true;
     $user_name = $_SESSION['name'];
     
-// Grab their email from the database for the My Account popup
     $sql = "SELECT Email FROM User WHERE User_id = ?";
     $user_stmt = $conn->prepare($sql);
     $user_stmt->execute([$_SESSION['user_id']]);
@@ -47,9 +45,14 @@ if (isset($_SESSION['user_id'])) {
 </a>
 
 <nav class="top-nav">
-<a href="#" id="btn-account" class="nav-pill">My Account</a>
-<a href="#" id="btn-notifications" class="nav-pill">Notifications</a>
-<a href="logout.php" class="nav-pill logout-pill">Log out</a>
+    <a href="#" id="btn-account" class="nav-pill">My Account</a>
+    
+    <a href="#" id="btn-notifications" class="nav-pill" style="position: relative;">
+        Notifications
+        <span id="unread-dot" class="hidden" style="position: absolute; top: -2px; right: -2px; height: 14px; width: 14px; background-color: #d9534f; border-radius: 50%; border: 2px solid #31365a;"></span>
+    </a>
+    
+    <a href="logout.php" class="nav-pill logout-pill">Log out</a>
 </nav>
 </header>
 
@@ -82,14 +85,24 @@ if (isset($_SESSION['user_id'])) {
 Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
 </footer>
 
-        <?php if ($is_logged_in): ?>
+         <?php if ($is_logged_in): ?>
             <div id="popup-notifications" class="popup-overlay hidden">
                 <div class="popup-box">
                     <h3>Notifications</h3>
-                    <p>You have no new notifications at this time.</p>
-                    <button class="card-btn" onclick="closePopups()">Close</button>
+                    
+                    <div id="notif-content" style="max-height: 200px; overflow-y: auto; text-align: left; margin-bottom: 20px;">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="card-btn" id="btn-clear-notifs" style="background-color: #d9534f; color: white;">Clear All</button>
+                        <button class="card-btn" onclick="closePopups()">Close</button>
+                    </div>
                 </div>
             </div>
+
+            <script>
+                const currentUserId = "<?php echo $_SESSION['user_id']; ?>";
+            </script>
 
             <div id="popup-account" class="popup-overlay hidden">
                 <div class="popup-box">

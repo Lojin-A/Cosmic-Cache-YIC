@@ -9,20 +9,36 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = $_POST['item-description'];
     $date = $_POST['item-date'];
 
+    // Safety check to ensure session exists
+    if (!isset($_SESSION['user_id'])) {
+        die("Error: Session missing. Please log in.");
+    }
     $user_id = $_SESSION['user_id'];
+    $image_name = NULL; 
 
-    $sql = "INSERT INTO Items 
-            (User_id, Title, Description, Type, Location, Event_date, Status)
-            VALUES (?, ?, ?, 'Lost', ?, ?, 'Pending')";
+    if (isset($_FILES['item-photo']) && $_FILES['item-photo']['error'] === UPLOAD_ERR_OK) {
+        $original_name = $_FILES['item-photo']['name'];
+        $image_name = time() . "_" . basename($original_name);
+        $target_path = "../Assets/Media/" . $image_name;
+        move_uploaded_file($_FILES['item-photo']['tmp_name'], $target_path);
+    }
+    
 
-    $stmt = $conn->prepare($sql);
-    $stmt->execute([$user_id, $title, $description, $location, $date]);
+    try {
+        $sql = "INSERT INTO Items 
+                (User_id, Title, Description, Type, Location, Event_date, Status, Image)
+                VALUES (?, ?, ?, 'Lost', ?, ?, 'Pending', ?)";
 
-    header("Location: lost_items.php?success=1");
-    exit();
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$user_id, $title, $description, $location, $date, $image_name]);
+        header("Location: lost_items.php?success=1");
+        exit();
+
+    } catch (PDOException $e) {
+        die("Database Error: " . $e->getMessage());
+    }
 }
 
-// 1. Check if the user is logged in
 $is_logged_in = false;
 $user_name = "";
 $user_email = "";
@@ -30,8 +46,6 @@ $user_email = "";
 if (isset($_SESSION['user_id'])) {
     $is_logged_in = true;
     $user_name = $_SESSION['name'];
-    
-    // Grab their email from the database for the My Account popup
     $sql = "SELECT Email FROM User WHERE User_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$_SESSION['user_id']]);
@@ -62,9 +76,14 @@ if (isset($_SESSION['user_id'])) {
 </div>
 </a>
 <nav class="top-nav">
-<a href="#" class="nav-pill" id="btn-account">My Account</a>
-<a href="#" class="nav-pill" id="btn-notifications">Notifications</a>
-<a href="logout.php" class="nav-pill logout-pill">Log out</a>
+    <a href="#" id="btn-account" class="nav-pill">My Account</a>
+    
+    <a href="#" id="btn-notifications" class="nav-pill" style="position: relative;">
+        Notifications
+        <span id="unread-dot" class="hidden" style="position: absolute; top: -2px; right: -2px; height: 14px; width: 14px; background-color: #d9534f; border-radius: 50%; border: 2px solid #31365a;"></span>
+    </a>
+    
+    <a href="logout.php" class="nav-pill logout-pill">Log out</a>
 </nav>
 </header>
 
@@ -115,15 +134,24 @@ if (isset($_SESSION['user_id'])) {
 <footer class="window-footer">
 Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
 </footer>
-
-<?php if ($is_logged_in): ?>
+ <?php if ($is_logged_in): ?>
             <div id="popup-notifications" class="popup-overlay hidden">
                 <div class="popup-box">
                     <h3>Notifications</h3>
-                    <p>You have no new notifications at this time.</p>
-                    <button class="card-btn" onclick="closePopups()">Close</button>
+                    
+                    <div id="notif-content" style="max-height: 200px; overflow-y: auto; text-align: left; margin-bottom: 20px;">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="card-btn" id="btn-clear-notifs" style="background-color: #d9534f; color: white;">Clear All</button>
+                        <button class="card-btn" onclick="closePopups()">Close</button>
+                    </div>
                 </div>
             </div>
+
+            <script>
+                const currentUserId = "<?php echo $_SESSION['user_id']; ?>";
+            </script>
 
             <div id="popup-account" class="popup-overlay hidden">
                 <div class="popup-box">

@@ -7,50 +7,59 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 }
 
 $admin_message = "";
+$js_notification = ""; 
 
-// =========================================================
-// 1. HANDLE ADMIN BUTTON CLICKS
-// =========================================================
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     $action = $_POST['action'];
     $item_id = $_POST['item_id'] ?? null;
     $claim_id = $_POST['claim_id'] ?? null;
 
     if ($action == 'deny_item') {
-        
+        $stmt = $conn->prepare("SELECT User_id FROM Items WHERE Item_id = ?");
+        $stmt->execute([$item_id]);
+        $target_user = $stmt->fetchColumn();
+
         $stmt = $conn->prepare("DELETE FROM Items WHERE Item_id = ?");
         $stmt->execute([$item_id]);
-        $admin_message = "Item denied and deleted. Notification sent to user.";
+        $admin_message = "Item denied and deleted.";
+        $js_notification = "saveJsonNotification('$target_user', 'Your post is deleted or denied.');";
     } 
     elseif ($action == 'accept_item') {
-        
+        $stmt = $conn->prepare("SELECT User_id FROM Items WHERE Item_id = ?");
+        $stmt->execute([$item_id]);
+        $target_user = $stmt->fetchColumn();
+
         $stmt = $conn->prepare("UPDATE Items SET Status = 'Approved' WHERE Item_id = ?");
         $stmt->execute([$item_id]);
-        $admin_message = "Item approved! Notification sent to user.";
+        $admin_message = "Item approved!";
+        $js_notification = "saveJsonNotification('$target_user', 'Your post is posted now.');";
     } 
     elseif ($action == 'delete_lost') {
-        
         $stmt = $conn->prepare("DELETE FROM Items WHERE Item_id = ?");
         $stmt->execute([$item_id]);
         $admin_message = "Lost item manually deleted.";
     } 
     elseif ($action == 'approve_claim') {
-        
+        $stmt = $conn->prepare("SELECT User_id FROM Claim WHERE Item_id = ?");
+        $stmt->execute([$item_id]);
+        $target_user = $stmt->fetchColumn();
+
         $stmt = $conn->prepare("DELETE FROM Items WHERE Item_id = ?");
         $stmt->execute([$item_id]);
-        $admin_message = "Claim approved! Item removed and notification sent to user to visit office.";
+        $admin_message = "Claim approved!";
+        $js_notification = "saveJsonNotification('$target_user', 'Your claim request is accepted please visit this office xx-xx to claim it.');";
     } 
     elseif ($action == 'reject_claim') {
-        
+        $stmt = $conn->prepare("SELECT User_id FROM Claim WHERE Claim_id = ?");
+        $stmt->execute([$claim_id]);
+        $target_user = $stmt->fetchColumn();
+
         $stmt = $conn->prepare("DELETE FROM Claim WHERE Claim_id = ?");
         $stmt->execute([$claim_id]);
-        $admin_message = "Claim rejected. Item remains on the site. Notification sent to user.";
+        $admin_message = "Claim rejected.";
+        $js_notification = "saveJsonNotification('$target_user', 'Your claim request is rejected.');";
     }
 }
-
-// =========================================================
-// 2. FETCH DATA FOR THE DASHBOARD
-// =========================================================
 
 $pending_items_stmt = $conn->query("SELECT * FROM Items WHERE Status = 'Pending'");
 $pending_items = $pending_items_stmt->fetchAll();
@@ -59,7 +68,7 @@ $approved_lost_stmt = $conn->query("SELECT * FROM Items WHERE Status = 'Approved
 $approved_lost_items = $approved_lost_stmt->fetchAll();
 
 $claims_sql = "
-    SELECT Claim.Claim_id, Claim.Item_id, Items.Title, User.Name AS ClaimerName 
+    SELECT Claim.Claim_id, Claim.Item_id, Items.Title, Items.Image, User.Name AS ClaimerName 
     FROM Claim 
     JOIN Items ON Claim.Item_id = Items.Item_id 
     JOIN User ON Claim.User_id = User.User_id 
@@ -109,6 +118,7 @@ $pending_claims = $claims_stmt->fetchAll();
                     
                     <?php foreach ($pending_items as $item): ?>
                         <div class="admin-item">
+                            
                             <?php if(!empty($item['Image'])): ?>
                                 <div class="image-area" style="width: 120px; height: 120px; margin: 0 auto 15px auto;">
                                     <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>" style="height: 100%; width: 100%; object-fit: contain;">
@@ -136,6 +146,13 @@ $pending_claims = $claims_stmt->fetchAll();
 
                     <?php foreach ($approved_lost_items as $item): ?>
                         <div class="admin-item" style="border: 2px dashed #4b527e;">
+                            
+                            <?php if(!empty($item['Image'])): ?>
+                                <div class="image-area" style="width: 120px; height: 120px; margin: 0 auto 15px auto;">
+                                    <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>" style="height: 100%; width: 100%; object-fit: contain;">
+                                </div>
+                            <?php endif; ?>
+
                             <p style="color: #31365a; font-size: 20px;">ID: <strong><?php echo $item['Item_id']; ?></strong></p>
                             <p style="color: #31365a; font-size: 20px;">Type: <strong>Lost (Approved)</strong></p>
                             <p style="color: #31365a; font-size: 20px;">Item: <strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
@@ -164,6 +181,13 @@ $pending_claims = $claims_stmt->fetchAll();
                     
                     <?php foreach ($pending_claims as $claim): ?>
                         <div class="admin-item">
+                            
+                            <?php if(!empty($claim['Image'])): ?>
+                                <div class="image-area" style="width: 120px; height: 120px; margin: 0 auto 15px auto;">
+                                    <img src="../Assets/Media/<?php echo htmlspecialchars($claim['Image']); ?>" style="height: 100%; width: 100%; object-fit: contain;">
+                                </div>
+                            <?php endif; ?>
+
                             <p style="color: #31365a; font-size: 20px;">Target Item: <strong><?php echo htmlspecialchars($claim['Title']); ?></strong></p>
                             <p style="color: #31365a; font-size: 20px;">Item ID: <strong><?php echo $claim['Item_id']; ?></strong></p>
                             <p style="color: #31365a; font-size: 20px;">Claimed by: <strong><?php echo htmlspecialchars($claim['ClaimerName']); ?></strong></p>
@@ -199,5 +223,22 @@ $pending_claims = $claims_stmt->fetchAll();
     </main>
 
     <script src="../Assets/JS/script.js"></script>
+    <script>
+        function saveJsonNotification(userId, message) {
+            const existingJson = localStorage.getItem('cosmic_notifs');
+            let notifObject = existingJson ? JSON.parse(existingJson) : {};
+            
+            if (!notifObject[userId]) {
+                notifObject[userId] = [];
+            }
+            
+            notifObject[userId].unshift(message);
+            localStorage.setItem('cosmic_notifs', JSON.stringify(notifObject));
+
+            localStorage.setItem('unread_' + userId, 'true');
+        }
+
+        <?php echo $js_notification; ?>
+    </script>
 </body>
 </html>

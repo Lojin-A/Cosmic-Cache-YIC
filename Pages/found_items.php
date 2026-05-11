@@ -2,11 +2,30 @@
 session_start();
 require '../Includes/db_connect.php';
 
+$success_message = "";
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['claim_item_id'])) {
+    if (!isset($_SESSION['user_id'])) {
+        die("Error: You must be logged in to claim an item.");
+    }
+
+    $item_id = $_POST['claim_item_id'];
+    $user_id = $_SESSION['user_id'];
+
+    try {
+        $sql = "INSERT INTO Claim (Item_id, User_id, Status) VALUES (?, ?, 'Pending')";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute([$item_id, $user_id]);
+        
+        $success_message = "Your claim request has been sent to the Admin!";
+    } catch (PDOException $e) {
+        die("Database Error: " . $e->getMessage());
+    }
+}
+
 $stmt = $conn->prepare("SELECT * FROM Items WHERE Type = 'Found' AND Status = 'Approved' ORDER BY Item_id DESC");
 $stmt->execute();
 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// 1. Check if the user is logged in
 $is_logged_in = false;
 $user_name = "";
 $user_email = "";
@@ -14,8 +33,6 @@ $user_email = "";
 if (isset($_SESSION['user_id'])) {
     $is_logged_in = true;
     $user_name = $_SESSION['name'];
-    
-    // Grab their email from the database for the My Account popup
     $sql = "SELECT Email FROM User WHERE User_id = ?";
     $stmt = $conn->prepare($sql);
     $stmt->execute([$_SESSION['user_id']]);
@@ -47,25 +64,34 @@ if (isset($_SESSION['user_id'])) {
 </a>
 
 <nav class="top-nav">
-<a href="#" id="btn-account" class="nav-pill">My Account</a>
-<a href="#" id="btn-notifications" class="nav-pill">Notifications</a>
-<a href="logout.php" class="nav-pill logout-pill">Log out</a>
+    <a href="#" id="btn-account" class="nav-pill">My Account</a>
+    
+    <a href="#" id="btn-notifications" class="nav-pill" style="position: relative;">
+        Notifications
+        <span id="unread-dot" class="hidden" style="position: absolute; top: -2px; right: -2px; height: 14px; width: 14px; background-color: #d9534f; border-radius: 50%; border: 2px solid #31365a;"></span>
+    </a>
+    
+    <a href="logout.php" class="nav-pill logout-pill">Log out</a>
 </nav>
 </header>
 
 <section class="welcome-section">
 <a href="post_found.php" class="nav-pill" style="display: inline-block; padding: 10px 40px; margin-bottom: 20px;">Post a New Found Item</a>
 <h2 class="sub-greeting">Browse Found Items</h2>
+
+<?php if(!empty($success_message)): ?>
+    <p style="color: #4b527e; font-size: 20px; font-weight: bold; margin-top: 10px;">✨ <?php echo $success_message; ?> ✨</p>
+<?php endif; ?>
 </section>
 
-<section class="card-container">
+<section class="browse-container">
    <?php if (empty($items)): ?>
     <?php else: ?>
         <?php foreach($items as $item): ?>
             <div class="browse-card">
                 <div class="browse-image-area">
                     <?php if(!empty($item['Image'])): ?>
-                        <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>">
+                        <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>" style="max-width: 100%; max-height: 100%;">
                     <?php else: ?>
                         <p style="color: #31365a;">No Image</p>
                     <?php endif; ?>
@@ -74,7 +100,12 @@ if (isset($_SESSION['user_id'])) {
                     <p><strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
                     <p><?php echo htmlspecialchars($item['Location']); ?></p>
                 </div>
-                <button class="card-btn">Claim</button>
+                
+                <form method="POST" style="margin: 0;">
+                    <input type="hidden" name="claim_item_id" value="<?php echo $item['Item_id']; ?>">
+                    <button type="submit" class="card-btn">Claim</button>
+                </form>
+                
             </div>
         <?php endforeach; ?>
     <?php endif; ?>
@@ -88,10 +119,20 @@ Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
             <div id="popup-notifications" class="popup-overlay hidden">
                 <div class="popup-box">
                     <h3>Notifications</h3>
-                    <p>You have no new notifications at this time.</p>
-                    <button class="card-btn" onclick="closePopups()">Close</button>
+                    
+                    <div id="notif-content" style="max-height: 200px; overflow-y: auto; text-align: left; margin-bottom: 20px;">
+                    </div>
+
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button class="card-btn" id="btn-clear-notifs" style="background-color: #d9534f; color: white;">Clear All</button>
+                        <button class="card-btn" onclick="closePopups()">Close</button>
+                    </div>
                 </div>
             </div>
+
+            <script>
+                const currentUserId = "<?php echo $_SESSION['user_id']; ?>";
+            </script>
 
             <div id="popup-account" class="popup-overlay hidden">
                 <div class="popup-box">
