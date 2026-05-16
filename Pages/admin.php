@@ -112,7 +112,7 @@ $pending_claims = $claims_stmt->fetchAll();
         <section class="card-container">
             
             <div class="action-card">
-                <h3 class="form-title" style="margin-bottom: 10px; font-size: 28px;">Item Posts</h3>
+                <h3 class="form-title" style="margin-bottom: 10px; font-size: 28px;">Pending Item Posts</h3>
                 
                 <div class="scroll-box">
                     

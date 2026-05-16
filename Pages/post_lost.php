@@ -2,6 +2,22 @@
 session_start();
 require '../Includes/db_connect.php';
 
+$update_message = "";
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_name'])) {
+
+    $new_name = trim($_POST['new_name']);
+    $user_id = $_SESSION['user_id'];
+
+    $sql = "UPDATE User SET Name = ? WHERE User_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$new_name, $user_id]);
+
+    $_SESSION['name'] = $new_name;
+    $user_name = $new_name;
+
+    $update_message = "Name updated successfully!";
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     $title = $_POST['item-name'];
@@ -156,8 +172,24 @@ Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
             <div id="popup-account" class="popup-overlay hidden">
                 <div class="popup-box">
                     <h3>Your Profile</h3>
+                                        <?php if(!empty($update_message)): ?>
+                     <p style="color: #618659; font-weight: bold;">
+                    <?php echo $update_message; ?>
+                      </p>
+                  <?php endif; ?>
+
                     <p><strong>Name:</strong> <?php echo htmlspecialchars($user_name); ?></p>
                     <p><strong>Email:</strong> <?php echo htmlspecialchars($user_email); ?></p>
+                    
+                      <form method="POST" style="margin-top: 15px;">
+                   <input 
+                    type="text" 
+                    name="new_name"
+                    value="<?php echo htmlspecialchars($user_name); ?>"
+                    required
+                    style="width:100%; max-width: 300px; padding:10px; border-radius:10px; border:none; margin-bottom:10px; box-sizing: border-box;">
+                   <button type="submit" name="update_name" class="card-btn">Update Name</button><br><br>
+              </form>
                     <button class="card-btn" onclick="closePopups()">Close</button>
                 </div>
             </div>
