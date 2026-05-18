@@ -131,11 +131,13 @@ $pending_claims = $claims_stmt->fetchAll();
                             
                             <div class="btn-group">
                                 <form method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="action" value="accept_item">
                                     <input type="hidden" name="item_id" value="<?php echo $item['Item_id']; ?>">
                                     <button type="submit" class="card-btn admin-btn">Accept</button>
                                 </form>
                                 <form method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="action" value="deny_item">
                                     <input type="hidden" name="item_id" value="<?php echo $item['Item_id']; ?>">
                                     <button type="submit" class="card-btn admin-btn deny-btn">Deny</button>
@@ -149,18 +151,19 @@ $pending_claims = $claims_stmt->fetchAll();
                             
                             <?php if(!empty($item['Image'])): ?>
                                 <div class="image-area" style="width: 120px; height: 120px; margin: 0 auto 15px auto;">
-                                    <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>" style="height: 100%; width: 100%; object-fit: contain;">
+                                    <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image'], ENT_QUOTES, 'UTF-8'); ?>" style="height: 100%; width: 100%; object-fit: contain;">
                                 </div>
                             <?php endif; ?>
 
-                            <p style="color: #31365a; font-size: 20px;">ID: <strong><?php echo $item['Item_id']; ?></strong></p>
+                            <p style="color: #31365a; font-size: 20px;">ID: <strong><?php echo htmlspecialchars($item['Item_id'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
                             <p style="color: #31365a; font-size: 20px;">Type: <strong>Lost (Approved)</strong></p>
-                            <p style="color: #31365a; font-size: 20px;">Item: <strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
-                            
+                            <p style="color: #31365a; font-size: 20px;">Item: <strong><?php echo htmlspecialchars($item['Title'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+
                             <div class="btn-group">
                                 <form method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="action" value="delete_lost">
-                                    <input type="hidden" name="item_id" value="<?php echo $item['Item_id']; ?>">
+                                    <input type="hidden" name="item_id" value="<?php echo htmlspecialchars($item['Item_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                     <button type="submit" class="card-btn admin-btn deny-btn" style="width: 100%;">Delete</button>
                                 </form>
                             </div>
@@ -184,23 +187,25 @@ $pending_claims = $claims_stmt->fetchAll();
                             
                             <?php if(!empty($claim['Image'])): ?>
                                 <div class="image-area" style="width: 120px; height: 120px; margin: 0 auto 15px auto;">
-                                    <img src="../Assets/Media/<?php echo htmlspecialchars($claim['Image']); ?>" style="height: 100%; width: 100%; object-fit: contain;">
+                                    <img src="../Assets/Media/<?php echo htmlspecialchars($claim['Image'], ENT_QUOTES, 'UTF-8'); ?>" style="height: 100%; width: 100%; object-fit: contain;">
                                 </div>
                             <?php endif; ?>
 
-                            <p style="color: #31365a; font-size: 20px;">Target Item: <strong><?php echo htmlspecialchars($claim['Title']); ?></strong></p>
-                            <p style="color: #31365a; font-size: 20px;">Item ID: <strong><?php echo $claim['Item_id']; ?></strong></p>
-                            <p style="color: #31365a; font-size: 20px;">Claimed by: <strong><?php echo htmlspecialchars($claim['ClaimerName']); ?></strong></p>
+                            <p style="color: #31365a; font-size: 20px;">Target Item: <strong><?php echo htmlspecialchars($claim['Title'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                            <p style="color: #31365a; font-size: 20px;">Item ID: <strong><?php echo htmlspecialchars($claim['Item_id'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                            <p style="color: #31365a; font-size: 20px;">Claimed by: <strong><?php echo htmlspecialchars($claim['ClaimerName'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
                             
                             <div class="btn-group">
                                 <form method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="action" value="approve_claim">
-                                    <input type="hidden" name="item_id" value="<?php echo $claim['Item_id']; ?>">
+                                    <input type="hidden" name="item_id" value="<?php echo htmlspecialchars($claim['Item_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                     <button type="submit" class="card-btn admin-btn">Approve</button>
                                 </form>
                                 <form method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                                     <input type="hidden" name="action" value="reject_claim">
-                                    <input type="hidden" name="claim_id" value="<?php echo $claim['Claim_id']; ?>">
+                                    <input type="hidden" name="claim_id" value="<?php echo htmlspecialchars($claim['Claim_id'], ENT_QUOTES, 'UTF-8'); ?>">
                                     <button type="submit" class="card-btn admin-btn deny-btn">Reject</button>
                                 </form>
                             </div>

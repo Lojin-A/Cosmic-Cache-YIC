@@ -6,15 +6,19 @@ $error = "";
 $submitted_email = ""; 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die('Invalid CSRF token');
+    }
     $email = $_POST['email'];
     $password = $_POST['password'];
     $submitted_email = htmlspecialchars($email);
-    $sql = "SELECT * FROM User WHERE Email = ? AND Password = ?";
+    $sql = "SELECT * FROM User WHERE Email = ?";
     $stmt = $conn->prepare($sql);
-    $stmt->execute([$email, $password]);
+    $stmt->execute([$email]);
     $user = $stmt->fetch();
 
-    if ($user) {
+    if ($user && password_verify($password, $user['Password'])) {
+        session_regenerate_id(true);
         $_SESSION['user_id'] = $user['User_id'];
         $_SESSION['role'] = $user['Role'];     
         $_SESSION['name'] = $user['Name'];
@@ -57,6 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h2 class="form-title">Log In</h2>
                 
                 <form id="login-form" method="POST" action="log_in.php">
+                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     
                     <div class="input-group">
                         <label for="email">Email :</label>

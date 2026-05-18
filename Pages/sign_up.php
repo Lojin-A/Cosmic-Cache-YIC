@@ -7,6 +7,9 @@ $submitted_name = "";
 $submitted_email = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die('Invalid CSRF token');
+    }
     $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -19,10 +22,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($check_stmt->rowCount() > 0) {
         $error = "This email is already registered. Please log in.";
     } else {
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        
         $insert_sql = "INSERT INTO User (Email, Name, Password, Role) VALUES (?, ?, ?, 'Student')";
         $insert_stmt = $conn->prepare($insert_sql);
         
-        if ($insert_stmt->execute([$email, $name, $password])) {
+        if ($insert_stmt->execute([$email, $name, $hash])) {
             $_SESSION['user_id'] = $conn->lastInsertId(); 
             $_SESSION['role'] = 'Student';
             $_SESSION['name'] = $name;
@@ -62,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h2 class="form-title">Sign Up</h2>
                 
                 <form id="signup-form" method="POST" action="sign_up.php">
-                    
+                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                     <div class="input-group">
                         <label for="name">Name :</label>
                         <input type="text" id="name" name="name" placeholder="Enter your name" value="<?php echo $submitted_name; ?>">

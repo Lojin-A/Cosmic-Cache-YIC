@@ -16,5 +16,12 @@ foreach ($passwords as $pwd) {
 if (!$conn) {
     die("Database Connection Failed. Both passwords were incorrect.");
 }
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32)); 
+}
 ?>
 

@@ -4,6 +4,9 @@ require '../Includes/db_connect.php';
 
 $update_message = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_name'])) {
+    if (!isset($_POST['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $_POST['csrf_token'])) {
+        die('Invalid CSRF token');
+    }
 
     $new_name = trim($_POST['new_name']);
     $user_id = $_SESSION['user_id'];
@@ -83,14 +86,14 @@ if (isset($_SESSION['user_id'])) {
     <div class="browse-card">
         <div class="browse-image-area">
             <?php if(!empty($item['Image'])): ?>
-                <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>">
+                <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image'], ENT_QUOTES, 'UTF-8'); ?>">
             <?php else: ?>
                 <p style="color: #31365a;">No Image</p>
             <?php endif; ?>
         </div>
         <div class="card-desc">
-            <p><?php echo htmlspecialchars($item['Title']); ?></p>
-            <p><?php echo htmlspecialchars($item['Event_date']); ?></p>
+            <p><?php echo htmlspecialchars($item['Title'], ENT_QUOTES, 'UTF-8'); ?></p>
+            <p><?php echo htmlspecialchars($item['Event_date'], ENT_QUOTES, 'UTF-8'); ?></p>
         </div>
     </div>
 <?php endforeach; ?>
@@ -130,14 +133,15 @@ Cosmic Cache YIC © 2026 | Developed by Lojin & Jana
                       </p>
                   <?php endif; ?>
                   
-                    <p><strong>Name:</strong> <?php echo htmlspecialchars($user_name); ?></p>
-                    <p><strong>Email:</strong> <?php echo htmlspecialchars($user_email); ?></p>
+                    <p><strong>Name:</strong> <?php echo htmlspecialchars($user_name, ENT_QUOTES, 'UTF-8'); ?></p>
+                    <p><strong>Email:</strong> <?php echo htmlspecialchars($user_email, ENT_QUOTES, 'UTF-8'); ?></p>
 
                     <form method="POST" style="margin-top: 15px;">
+                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                    <input 
                     type="text" 
                     name="new_name"
-                    value="<?php echo htmlspecialchars($user_name); ?>"
+                    value="<?php echo htmlspecialchars($user_name, ENT_QUOTES, 'UTF-8') ?>"
                     required
                     style="width:100%; max-width: 300px; padding:10px; border-radius:10px; border:none; margin-bottom:10px; box-sizing: border-box;">
                    <button type="submit" name="update_name" class="card-btn">Update Name</button><br><br>
