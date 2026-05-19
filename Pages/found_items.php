@@ -121,6 +121,7 @@ if (isset($_SESSION['user_id'])) {
                 <div class="card-desc">
                     <p><strong><?php echo htmlspecialchars($item['Title'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
                     <p><?php echo htmlspecialchars($item['Location'], ENT_QUOTES, 'UTF-8'); ?></p>
+                    <p style="font-size: 0.9em;"><?php echo htmlspecialchars($item['Description'], ENT_QUOTES, 'UTF-8'); ?></p>
                 </div>
                 
                 <form method="POST" style="margin: 0;">

@@ -61,10 +61,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['action'])) {
     }
 }
 
-$pending_items_stmt = $conn->query("SELECT * FROM Items WHERE Status = 'Pending'");
+$pending_items_sql = "
+    SELECT Items.*, User.Name AS PosterName 
+    FROM Items 
+    JOIN User ON Items.User_id = User.User_id 
+    WHERE Items.Status = 'Pending'
+";
+$pending_items_stmt = $conn->prepare($pending_items_sql);
+$pending_items_stmt->execute();
 $pending_items = $pending_items_stmt->fetchAll();
 
-$approved_lost_stmt = $conn->query("SELECT * FROM Items WHERE Status = 'Approved' AND Type = 'Lost'");
+$approved_lost_sql = "
+    SELECT Items.*, User.Name AS PosterName 
+    FROM Items 
+    JOIN User ON Items.User_id = User.User_id 
+    WHERE Items.Status = 'Approved' AND Items.Type = 'Lost'
+";
+$approved_lost_stmt = $conn->prepare($approved_lost_sql);
+$approved_lost_stmt->execute();
 $approved_lost_items = $approved_lost_stmt->fetchAll();
 
 $claims_sql = "
@@ -74,7 +88,8 @@ $claims_sql = "
     JOIN User ON Claim.User_id = User.User_id 
     WHERE Claim.Status = 'Pending'
 ";
-$claims_stmt = $conn->query($claims_sql);
+$claims_stmt = $conn->prepare($claims_sql);
+$claims_stmt->execute();
 $pending_claims = $claims_stmt->fetchAll();
 ?>
 
@@ -121,13 +136,15 @@ $pending_claims = $claims_stmt->fetchAll();
                             
                             <?php if(!empty($item['Image'])): ?>
                                 <div class="image-area" style="width: 120px; height: 120px; margin: 0 auto 15px auto;">
-                                    <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image']); ?>" style="height: 100%; width: 100%; object-fit: contain;">
+                                    <img src="../Assets/Media/<?php echo htmlspecialchars($item['Image'], ENT_QUOTES, 'UTF-8'); ?>" style="height: 100%; width: 100%; object-fit: contain;">
                                 </div>
                             <?php endif; ?>
                             
                             <p style="color: #31365a; font-size: 20px;">ID: <strong><?php echo $item['Item_id']; ?></strong></p>
                             <p style="color: #31365a; font-size: 20px;">Type: <strong><?php echo $item['Type']; ?> (Pending)</strong></p>
-                            <p style="color: #31365a; font-size: 20px;">Item: <strong><?php echo htmlspecialchars($item['Title']); ?></strong></p>
+                            <p style="color: #31365a; font-size: 20px;">Item: <strong><?php echo htmlspecialchars($item['Title'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                            <p style="color: #31365a; font-size: 20px;">Posted by: <strong><?php echo htmlspecialchars($item['PosterName'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+
                             
                             <div class="btn-group">
                                 <form method="POST" style="display:inline;">
@@ -158,6 +175,7 @@ $pending_claims = $claims_stmt->fetchAll();
                             <p style="color: #31365a; font-size: 20px;">ID: <strong><?php echo htmlspecialchars($item['Item_id'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
                             <p style="color: #31365a; font-size: 20px;">Type: <strong>Lost (Approved)</strong></p>
                             <p style="color: #31365a; font-size: 20px;">Item: <strong><?php echo htmlspecialchars($item['Title'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
+                            <p style="color: #31365a; font-size: 20px;">Posted by: <strong><?php echo htmlspecialchars($item['PosterName'], ENT_QUOTES, 'UTF-8'); ?></strong></p>
 
                             <div class="btn-group">
                                 <form method="POST" style="display:inline;">

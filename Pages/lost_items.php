@@ -94,6 +94,7 @@ if (isset($_SESSION['user_id'])) {
         <div class="card-desc">
             <p><?php echo htmlspecialchars($item['Title'], ENT_QUOTES, 'UTF-8'); ?></p>
             <p><?php echo htmlspecialchars($item['Event_date'], ENT_QUOTES, 'UTF-8'); ?></p>
+            <p style="font-size: 0.9em;"><?php echo htmlspecialchars($item['Description'], ENT_QUOTES, 'UTF-8'); ?></p>
         </div>
     </div>
 <?php endforeach; ?>
