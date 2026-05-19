@@ -417,11 +417,19 @@ input[type="file"]::file-selector-button:hover {
 ================================================== */
 @media (max-width: 768px) {
     .browse-container { 
-        flex-direction: column; 
-        align-items: center; 
+        display: block;        
+        max-height: 400px; 
+        overflow-y: auto;
+        width: 100%;
+        padding: 10px;
     }
+    
     .browse-card { 
-        width: 100%; 
-        max-width: 400px; 
+        width: 85%; 
+        margin: 0 auto 20px auto; 
+        max-width: 350px;
+        display: flex;           
+        flex-direction: column;
+        align-items: center;
     }
 }

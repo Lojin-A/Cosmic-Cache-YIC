@@ -1,21 +1,25 @@
 <?php
-$host = "localhost";
-$username = "root";
-$database = "cosmic_cache_db";
-$passwords = ["Ja252267@&" , "lomysql*123"]; 
-$conn = null;
+$host = 'localhost';
+$dbname = 'cosmic_cache_db';
+$username = 'root';
+$password = '';
 
-foreach ($passwords as $pwd) {
-    try {
-        $conn = new PDO("mysql:host=$host;dbname=$database;charset=utf8", $username, $pwd);
-        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        break;
-    } catch(PDOException $e) {
-    }
+try {
+    
+    $conn = new PDO(
+        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
+        $username,
+        $password,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,      
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,  
+            PDO::ATTR_EMULATE_PREPARES => false               
+        ]
+    );
+} catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
 }
-if (!$conn) {
-    die("Database Connection Failed. Both passwords were incorrect.");
-}
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }

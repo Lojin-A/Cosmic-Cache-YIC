@@ -26,11 +26,7 @@ CREATE TABLE Claim (
     Claim_id INT AUTO_INCREMENT PRIMARY KEY,
     User_id INT NOT NULL,
     Item_id INT NOT NULL,
-    Proof_description TEXT,
     Status VARCHAR(50) DEFAULT 'Pending',
     FOREIGN KEY (User_id) REFERENCES User(User_id) ON DELETE CASCADE,
     FOREIGN KEY (Item_id) REFERENCES Items(Item_id) ON DELETE CASCADE
 );
-
-INSERT INTO User (Email, Name, Password, Role) VALUES 
-('Admin@gmail.com', 'Admin', 'admin123*admin', 'admin');
