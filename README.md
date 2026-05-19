@@ -42,6 +42,7 @@ $stmt->execute([$email, $name, $hashed_password]);
 
 echo "Admin created successfully! CRITICAL: Delete this file (setup_admin.php) immediately.";
 ?>
+```
 2. Navigate to http: `//localhost/cosmic_cache/setup_admin.php` in your browser to execute the script and insert the admin into the database.
 3. **Important:** Delete `setup_admin.php` from your folder immediately after running it to maintain system security.
 
